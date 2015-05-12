@@ -64,9 +64,6 @@ $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/5
   "identity": {
     "gender": "male",
     "first": "John",
-    "middle": "",
-    "prefix": "Mr",
-    "suffix": "Jr",
     "last": "Doe"
   },
 
@@ -182,9 +179,6 @@ $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
   "identity": {
     "gender": "male",
     "first": "John",
-    "middle": "",
-    "prefix": "Mr",
-    "suffix": "Jr",
     "last": "Doe"
   },
 
@@ -276,7 +270,60 @@ Creates a new customer record.
 
 ## PUT /:oid/customers/:id
 
-Updates the specified customer by setting the values of the parameters passed. Any parameters not provided will be left unchanged. For example, if you pass the source parameter, that becomes the customer's active source (e.g., a card) to be used for all charges in the future. When you update a customer to a new valid source: for each of the customer's current subscriptions, if the subscription is in the past_due state, then the latest unpaid, unclosed invoice for the subscription will be retried (note that this retry will not count as an automatic retry, and will not affect the next regularly scheduled payment for the invoice). (Note also that no invoices pertaining to subscriptions in the unpaid state, or invoices pertaining to canceled subscriptions, will be retried as a result of updating the customer's source.) This request accepts mostly the same arguments as the customer creation call.
+> Example Request
+
+```shell
+$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6
+  -X PUT
+  -d '{ "identity": {"first": "Jane"} }'
+```
+
+> Example Response
+
+```json
+{
+  "id": "522f78b8-6f39-4dce-be8e-ce0fc0f816e6",
+
+  "created_at": "2015-03-26T18:33:10.545+01:00",
+  "updated_at": "2015-03-26T18:33:10.545+01:00",
+
+  "locale": "de-DE",
+
+  "identity": {
+    "gender": "male",
+    "first": "Jane",
+    "last": "Doe"
+  },
+
+  "emails": [
+    {
+      "primary": true,
+      "name": "home", // home, work, other
+      "value": "john.doe@example.com"
+    }
+  ]
+}
+```
+
+Updates the customer by setting the values of the passed parameters. Any parameters not provided will be left unchanged.
+
+### Request URL
+`https://api.shore.com/v1/:oid/customers/:id`
+
+### Request Params
+<table class="attributes">
+  <tr>
+    <td>oid<div>String, <span class="req">Required</span></div></td>
+    <td>The organization id</td>
+  </tr>
+  <tr>
+    <td>id<div>String, <span class="req">Required</span></div></td>
+    <td>The customer id</td>
+  </tr>
+</table>
+
+### Response Code
+`200`
 
 
 ## DELETE /:oid/customers/:id
@@ -297,7 +344,7 @@ $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/5
 }
 ```
 
-Permanently deletes a customer. It cannot be undone.
+Permanently deletes a customer. It cannot be undone. Upon deletion, the response returns the `deleted_at` date.
 
 ### Request URL
 `https://api.shore.com/v1/:oid/customers`
