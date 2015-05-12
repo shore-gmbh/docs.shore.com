@@ -163,6 +163,12 @@ Retrieves the details of an existing customer.
 ```shell
 $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
   -X POST
+  -d '{
+    "identity": {
+      "first": "John",
+      "last": "Doe"
+    }
+  }'
 ```
 
 > Example Response
@@ -174,80 +180,10 @@ $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
   "created_at": "2015-03-26T18:33:10.545+01:00",
   "updated_at": "2015-03-26T18:33:10.545+01:00",
 
-  "locale": "de-DE",
-
   "identity": {
-    "gender": "male",
     "first": "John",
     "last": "Doe"
-  },
-
-  "groups": [
-    {
-      "name": "category",
-      "value": "VIP"
-    }
-  ],
-
-  "addresses": [
-    {
-      "line1": "Rosenheimer Str 145e",
-      "line2": "1st floor",
-      "city": "Munich",
-      "state": "Bavaria",
-      "zip": "81671",
-      "country": "Germany"
-    }, {
-      "...": "..."
-    }
-  ],
-
-  "dates": [
-    {
-      "name": "birthday",  // birthday, anniversary, other
-      "value": "2015-03-26"
-    }, {
-      "...": "..."
-    }
-  ],
-
-  "emails": [
-    {
-      "primary": true,
-      "name": "home", // home, work, other
-      "value": "john.doe@example.com"
-    }, {
-      "...": "..."
-    }
-  ],
-
-  "phones": [
-    {
-      "primary": true,
-      "name": "mobile", // mobile, work, home, work-fax, home-fax, other
-      "value": "123456789"
-    }, {
-      "...": "..."
-    }
-  ],
-
-  "urls": [
-    {
-      "name": "website", // website, other
-      "value": "http://www.example.com"
-    }, {
-      "...": "..."
-    }
-  ],
-
-  "attributes": [
-    {
-      "name": "description",
-      "value": "Some custom definde attribute"
-    }, {
-      "...": "..."
-    }
-  ]
+  }
 }
 ```
 
@@ -275,7 +211,11 @@ Creates a new customer record.
 ```shell
 $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6
   -X PUT
-  -d '{ "identity": {"first": "Jane"} }'
+  -d '{
+    "identity": {
+      "first": "Jane"
+    }
+  }'
 ```
 
 > Example Response
@@ -287,21 +227,10 @@ $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/5
   "created_at": "2015-03-26T18:33:10.545+01:00",
   "updated_at": "2015-03-26T18:33:10.545+01:00",
 
-  "locale": "de-DE",
-
   "identity": {
-    "gender": "male",
     "first": "Jane",
     "last": "Doe"
-  },
-
-  "emails": [
-    {
-      "primary": true,
-      "name": "home", // home, work, other
-      "value": "john.doe@example.com"
-    }
-  ]
+  }
 }
 ```
 
