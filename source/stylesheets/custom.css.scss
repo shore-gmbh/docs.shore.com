@@ -1,0 +1,84 @@
+/*
+ * Added by Shore
+ */
+
+/*
+ * Overrides
+ */
+.tocify-wrapper {
+  h1 {
+    padding: 0 5px;
+    color: whitesmoke;
+    text-transform: lowercase;
+
+    b {
+      color: orange;
+    }
+  }
+}
+
+.content > blockquote {
+  padding: 0;
+  background: inherit;
+
+  > p {
+    padding-bottom: 0;
+
+    background: inherit;
+    border-top: 0 none;
+  }
+}
+
+/*
+ * Custom tyles
+ */
+.content > table.attributes {
+  background: white;
+
+  caption {
+    display: block;
+    padding: 10px 0;
+
+    text-align: left;
+    text-transform: uppercase;
+
+    color: grey;
+    border-bottom: 1px solid lightgray;
+  }
+
+  tbody {
+    display: block;
+  }
+
+  tr > td {
+    background: inherit;
+  }
+
+  tr {
+    display: block;
+    border-bottom: 1px solid whitesmoke;
+
+    &:last-child {
+      border-color: transparent;
+    }
+  }
+
+  td {
+    &:first-child {
+      width: 100px;
+      text-align: right;
+    }
+
+    &:last-child {
+      color: grey;
+    }
+
+    div {
+      color: grey;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+
+    .req { color: orange; }
+  }
+}
