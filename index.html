@@ -101,9 +101,6 @@
   </span><span class="s2">"identity"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="s2">"gender"</span><span class="p">:</span><span class="w"> </span><span class="s2">"male"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"first"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"middle"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"prefix"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mr"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"suffix"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jr"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"last"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="w">
   </span><span class="p">},</span><span class="w">
 
@@ -222,9 +219,6 @@
   </span><span class="s2">"identity"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
     </span><span class="s2">"gender"</span><span class="p">:</span><span class="w"> </span><span class="s2">"male"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"first"</span><span class="p">:</span><span class="w"> </span><span class="s2">"John"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"middle"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"prefix"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mr"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"suffix"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jr"</span><span class="p">,</span><span class="w">
     </span><span class="s2">"last"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="w">
   </span><span class="p">},</span><span class="w">
 
@@ -318,7 +312,63 @@
 
 <h2 id="put-/:oid/customers/:id">PUT /:oid/customers/:id</h2>
 
-<p>Updates the specified customer by setting the values of the parameters passed. Any parameters not provided will be left unchanged. For example, if you pass the source parameter, that becomes the customer&rsquo;s active source (e.g., a card) to be used for all charges in the future. When you update a customer to a new valid source: for each of the customer&rsquo;s current subscriptions, if the subscription is in the past_due state, then the latest unpaid, unclosed invoice for the subscription will be retried (note that this retry will not count as an automatic retry, and will not affect the next regularly scheduled payment for the invoice). (Note also that no invoices pertaining to subscriptions in the unpaid state, or invoices pertaining to canceled subscriptions, will be retried as a result of updating the customer&rsquo;s source.) This request accepts mostly the same arguments as the customer creation call.</p>
+<blockquote>
+<p>Example Request</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">$ </span>curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6
+  -X PUT
+  -d <span class="s1">'{ "identity": {"first": "Jane"} }'</span>
+</code></pre>
+
+<blockquote>
+<p>Example Response</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"522f78b8-6f39-4dce-be8e-ce0fc0f816e6"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-26T18:33:10.545+01:00"</span><span class="p">,</span><span class="w">
+  </span><span class="s2">"updated_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-03-26T18:33:10.545+01:00"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"locale"</span><span class="p">:</span><span class="w"> </span><span class="s2">"de-DE"</span><span class="p">,</span><span class="w">
+
+  </span><span class="s2">"identity"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"gender"</span><span class="p">:</span><span class="w"> </span><span class="s2">"male"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"first"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Jane"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"last"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Doe"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+
+  </span><span class="s2">"emails"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"primary"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"home"</span><span class="p">,</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">home,</span><span class="w"> </span><span class="err">work,</span><span class="w"> </span><span class="err">other</span><span class="w">
+      </span><span class="s2">"value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"john.doe@example.com"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>Updates the customer by setting the values of the passed parameters. Any parameters not provided will be left unchanged.</p>
+
+<h3 id="request-url">Request URL</h3>
+
+<p><code class="prettyprint">https://api.shore.com/v1/:oid/customers/:id</code></p>
+
+<h3 id="request-params">Request Params</h3>
+
+<table class="attributes">
+  <tr>
+    <td>oid<div>String, <span class="req">Required</span></div></td>
+    <td>The organization id</td>
+  </tr>
+  <tr>
+    <td>id<div>String, <span class="req">Required</span></div></td>
+    <td>The customer id</td>
+  </tr>
+</table>
+
+<h3 id="response-code">Response Code</h3>
+
+<p><code class="prettyprint">200</code></p>
 
 <h2 id="delete-/:oid/customers/:id">DELETE /:oid/customers/:id</h2>
 
@@ -338,7 +388,7 @@
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<p>Permanently deletes a customer. It cannot be undone.</p>
+<p>Permanently deletes a customer. It cannot be undone. Upon deletion, the response returns the <code class="prettyprint">deleted_at</code> date.</p>
 
 <h3 id="request-url">Request URL</h3>
 
