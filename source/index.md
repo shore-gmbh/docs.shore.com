@@ -7,13 +7,16 @@ The Customer Store Service is used for serving any kind of customer related info
 
 > Example Request
 
-```shell
-$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers
+```language-curl
+curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
+  -d dude="awesome-stuff"
+  --data dude="awesome stuff"
+  -u authentication_key
 ```
 
 > Example Response
 
-```json
+```language-javascript
 {
   "meta": {
     "current_page": 1,
@@ -41,6 +44,7 @@ Retrieves all customers for a given organization id. The result is paginated.
 
 ### Reponse Code
 `200`
+
 
 ## GET /:oid/customers/:id
 
