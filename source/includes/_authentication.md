@@ -2,7 +2,7 @@
 
 > Example Request
 
-```bash
+```language-curl
 $ curl https://api.shore.com/v1/customers \
   -u Mzs6i13SUB16xfyGFAm4:
 ```

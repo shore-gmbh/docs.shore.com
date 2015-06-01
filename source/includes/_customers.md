@@ -7,13 +7,16 @@ The Customer Store Service is used for serving any kind of customer related info
 
 > Example Request
 
-```shell
-$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers
+```language-curl
+curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
+  -d dude="awesome-stuff"
+  --data dude="awesome stuff"
+  -u authentication_key
 ```
 
 > Example Response
 
-```json
+```language-javascript
 {
   "meta": {
     "current_page": 1,
@@ -42,17 +45,18 @@ Retrieves all customers for a given organization id. The result is paginated.
 ### Reponse Code
 `200`
 
+
 ## GET /:oid/customers/:id
 
 > Example Request
 
-```shell
+```language-curl
 $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6
 ```
 
 > Example Response
 
-```json
+```language-javascript
 {
   "id": "522f78b8-6f39-4dce-be8e-ce0fc0f816e6",
 
@@ -160,7 +164,7 @@ Retrieves the details of an existing customer.
 
 > Example Request
 
-```shell
+```language-curl
 $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
   -X POST
   -d '{
@@ -173,7 +177,7 @@ $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
 
 > Example Response
 
-```json
+```language-javascript
 {
   "id": "522f78b8-6f39-4dce-be8e-ce0fc0f816e6",
 
@@ -208,7 +212,7 @@ Creates a new customer record.
 
 > Example Request
 
-```shell
+```language-curl
 $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6
   -X PUT
   -d '{
@@ -220,7 +224,7 @@ $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/5
 
 > Example Response
 
-```json
+```language-javascript
 {
   "id": "522f78b8-6f39-4dce-be8e-ce0fc0f816e6",
 
@@ -259,14 +263,14 @@ Updates the customer by setting the values of the passed parameters. Any paramet
 
 > Example Request
 
-```bash
+```language-curl
 $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6 \
   -X DELETE
 ```
 
 > Example Response
 
-```json
+```language-jvascript
 {
   "id": "522f78b8-6f39-4dce-be8e-ce0fc0f816e6",
   "deleted_at": "2015-03-26T18:33:10.545+01:00"
@@ -288,5 +292,4 @@ Permanently deletes a customer. It cannot be undone. Upon deletion, the response
 
 ### Response Code
 `201`
-
 
