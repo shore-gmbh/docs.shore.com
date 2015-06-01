@@ -17,15 +17,31 @@
   }
 }
 
+.page-wrapper {
+  background-color: white;
+}
+
+.content > h1,
+.content > h2 {
+  border-top: 0 none;
+}
+
+.content > h2 {
+  margin-top: 30px;
+}
+
 .content > blockquote {
   padding: 0;
   background: inherit;
 
   > p {
+    padding-top: 0;
     padding-bottom: 0;
 
+    text-shadow: none;
+
     background: inherit;
-    border-top: 0 none;
+    border: 0 none;
   }
 }
 
