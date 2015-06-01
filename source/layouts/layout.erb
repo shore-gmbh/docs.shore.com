@@ -110,27 +110,37 @@ under the License.
 
     <%= javascript_include_tag :prism %>
     <script>
-Prism.languages.curl = {
-  'keyword': /curl/,
-  'function': /(?:\ )([^ ]+):\/\/([^ ]+)/, // anything like "*://*"
-  'string': /("|')(\\\n|\\?.)*?\1/,
+Prism.languages.curl = Prism.languages.extend('bash', {
+  'keyword': /\b(curl)\b/,
+
+  // anything like "*://*"
+  'function': /(?:\ )([^ ]+):\/\/([^ ]+)/,
+
+  // -d OR --data
+  'operator': /(--?\w+)(?:\s+)/i,
+
+  // key='value'
   'property': {
-    'pattern': /(?:\ )([-_a-z0-9]+)(?:=)/i,
+    'pattern': /(\S+)(?:\=)/i,
     'inside': {
       'punctuation': /[=]/,
     }
   },
-  'operator': /(--?[a-z]+)(?:\ )/i, // -d OR --data
-  'punctuation': /[\\]/
-};
 
-Prism.languages.insertBefore('curl', 'string', {
+  'punctuation': /[\\]/
+});
+
+Prism.languages.insertBefore('curl', 'operator', {
+  'property': {
+    pattern: /(-u|--user)\s*(.+)/g,
+    inside: {
+      'operator': /(^-u|--user)/,
+      'punctuation': /[\:\\]/
+    }
+  }
 });
 
 /*
-Prism.languages.insertBefore("bash", "function", {
-});
-
 Prism.languages.insertBefore("bash", "operator", {
   "api-key": {
     pattern: /(?:-u )([a-zA-Z0-9_]+)/g,
