@@ -3,7 +3,8 @@
 > Example Request
 
 ```language-curl
-$ curl https://api.shore.com/v1/customers \
+# doing some strusdfsf
+$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
   -u Mzs6i13SUB16xfyGFAm4:
 ```
 

@@ -117,7 +117,13 @@ Prism.languages.curl = Prism.languages.extend('bash', {
   'function': /(?:\ )([^ ]+):\/\/([^ ]+)/,
 
   // -d OR --data
-  'operator': /(--?\w+)(?:\s+)/i,
+  'operator': {
+    pattern: /(--?\w+)\s*?(.+)/ig,
+    inside: {
+      'property': /(\S+):(\S+)?/,
+      'punctuation': /[\:\\]/
+    }
+  },
 
   // key='value'
   'property': {

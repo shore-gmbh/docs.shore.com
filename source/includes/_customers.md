@@ -9,9 +9,7 @@ The Customer Store Service is used for serving any kind of customer related info
 
 ```language-curl
 curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
-  -d dude="awesome-stuff"
-  --data dude="awesome stuff"
-  -u authentication_key
+  -u Mzs6i13SUB16xfyGFAm4:
 ```
 
 > Example Response
@@ -51,7 +49,8 @@ Retrieves all customers for a given organization id. The result is paginated.
 > Example Request
 
 ```language-curl
-$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6
+$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6 \
+  -u Mzs6i13SUB16xfyGFAm4:
 ```
 
 > Example Response
@@ -166,7 +165,8 @@ Retrieves the details of an existing customer.
 
 ```language-curl
 $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
-  -X POST
+  -X POST \
+  -u Mzs6i13SUB16xfyGFAm4: \
   -d '{
     "identity": {
       "first": "John",
@@ -208,13 +208,14 @@ Creates a new customer record.
 `201`
 
 
-## PUT /:oid/customers/:id
+## PATCH /:oid/customers/:id
 
 > Example Request
 
 ```language-curl
 $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6
-  -X PUT
+  -X PATCH \
+  -u Mzs6i13SUB16xfyGFAm4: \
   -d '{
     "identity": {
       "first": "Jane"
@@ -265,7 +266,8 @@ Updates the customer by setting the values of the passed parameters. Any paramet
 
 ```language-curl
 $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6 \
-  -X DELETE
+  -X DELETE \
+  -u Mzs6i13SUB16xfyGFAm4:
 ```
 
 > Example Response
