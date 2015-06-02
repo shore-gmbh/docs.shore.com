@@ -9,7 +9,7 @@ $ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
 
 > curl uses the -u flag to pass basic auth credentials (adding a colon after your API key will prevent it from asking you for a password).
 
-You authenticate to the Shore API by providing one of your API key in the request. 
+You authenticate to the Shore API by providing one of your API key in the request.
 
 TODO: You can manage your API keys from your account. You can have multiple API keys active at one time. Your API keys carry many privileges, so be sure to keep them secret!
 
