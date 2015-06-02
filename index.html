@@ -36,14 +36,18 @@
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        
+        <h1 id="introduction">Introduction</h1>
+
+<p>This document resembles a <strong>WORK IN PROGRESS</strong> state. The described endpoints are open to change and will be finalized in the near future.</p>
+
           <h1 id="authentication">Authentication</h1>
 
 <blockquote>
 <p>Example Request</p>
 </blockquote>
 
-<pre><code class="language-curl">$ curl https://api.shore.com/v1/customers \
+<pre><code class="language-curl"># doing some strusdfsf
+$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
   -u Mzs6i13SUB16xfyGFAm4:
 </code></pre>
 
@@ -68,9 +72,7 @@
 </blockquote>
 
 <pre><code class="language-curl">curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
-  -d dude=&quot;awesome-stuff&quot;
-  --data dude=&quot;awesome stuff&quot;
-  -u authentication_key
+  -u Mzs6i13SUB16xfyGFAm4:
 </code></pre>
 
 <blockquote>
@@ -114,7 +116,8 @@
 <p>Example Request</p>
 </blockquote>
 
-<pre><code class="language-curl">$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6
+<pre><code class="language-curl">$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6 \
+  -u Mzs6i13SUB16xfyGFAm4:
 </code></pre>
 
 <blockquote>
@@ -234,7 +237,8 @@
 </blockquote>
 
 <pre><code class="language-curl">$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
-  -X POST
+  -X POST \
+  -u Mzs6i13SUB16xfyGFAm4: \
   -d &#39;{
     &quot;identity&quot;: {
       &quot;first&quot;: &quot;John&quot;,
@@ -279,14 +283,15 @@
 
 <p><code>201</code></p>
 
-<h2 id="put-/:oid/customers/:id">PUT /:oid/customers/:id</h2>
+<h2 id="patch-/:oid/customers/:id">PATCH /:oid/customers/:id</h2>
 
 <blockquote>
 <p>Example Request</p>
 </blockquote>
 
 <pre><code class="language-curl">$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6
-  -X PUT
+  -X PATCH \
+  -u Mzs6i13SUB16xfyGFAm4: \
   -d &#39;{
     &quot;identity&quot;: {
       &quot;first&quot;: &quot;Jane&quot;
@@ -341,7 +346,8 @@
 </blockquote>
 
 <pre><code class="language-curl">$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6 \
-  -X DELETE
+  -X DELETE \
+  -u Mzs6i13SUB16xfyGFAm4:
 </code></pre>
 
 <blockquote>
@@ -381,27 +387,43 @@
 
     <script src="javascripts/prism.js" type="text/javascript"></script>
     <script>
-Prism.languages.curl = {
-  'keyword': /curl/,
-  'function': /(?:\ )([^ ]+):\/\/([^ ]+)/, // anything like "*://*"
-  'string': /("|')(\\\n|\\?.)*?\1/,
+Prism.languages.curl = Prism.languages.extend('bash', {
+  'keyword': /\b(curl)\b/,
+
+  // anything like "*://*"
+  'function': /(?:\ )([^ ]+):\/\/([^ ]+)/,
+
+  // -d OR --data
+  'operator': {
+    pattern: /(--?\w+)\s*?(.+)/ig,
+    inside: {
+      'property': /(\S+):(\S+)?/,
+      'punctuation': /[\:\\]/
+    }
+  },
+
+  // key='value'
   'property': {
-    'pattern': /(?:\ )([-_a-z0-9]+)(?:=)/i,
+    'pattern': /(\S+)(?:\=)/i,
     'inside': {
       'punctuation': /[=]/,
     }
   },
-  'operator': /(--?[a-z]+)(?:\ )/i, // -d OR --data
-  'punctuation': /[\\]/
-};
 
-Prism.languages.insertBefore('curl', 'string', {
+  'punctuation': /[\\]/
+});
+
+Prism.languages.insertBefore('curl', 'operator', {
+  'property': {
+    pattern: /(-u|--user)\s*(.+)/g,
+    inside: {
+      'operator': /(^-u|--user)/,
+      'punctuation': /[\:\\]/
+    }
+  }
 });
 
 /*
-Prism.languages.insertBefore("bash", "function", {
-});
-
 Prism.languages.insertBefore("bash", "operator", {
   "api-key": {
     pattern: /(?:-u )([a-zA-Z0-9_]+)/g,
