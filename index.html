@@ -38,7 +38,7 @@
       <div class="content">
         <h1 id="introduction">Introduction</h1>
 
-<p>This document resembles a <strong>WORK IN PROGRESS</strong> state. The described endpoints are open to change and will be finalized in the near future.</p>
+<aside class="warning">This document resembles a WORK IN PROGRESS state. The described endpoints are open to change and will be finalized in the near future.</aside>
 
           <h1 id="authentication">Authentication</h1>
 
@@ -54,11 +54,64 @@
 <p>curl uses the -u flag to pass basic auth credentials (adding a colon after your API key will prevent it from asking you for a password).</p>
 </blockquote>
 
-<p>You authenticate to the Shore API by providing one of your API key in the request. </p>
+<p>You authenticate to the Shore API by providing one of your API key in the request.</p>
 
 <p>TODO: You can manage your API keys from your account. You can have multiple API keys active at one time. Your API keys carry many privileges, so be sure to keep them secret!</p>
 
 <p>Authentication to the API occurs via HTTP Basic Auth. Provide your API key as the basic auth username. You do not need to provide a password. All API requests must be made over HTTPS. Calls made over plain HTTP will fail. You must authenticate for all requests.</p>
+
+          <h1 id="errors">Errors</h1>
+
+<p>Shore uses conventional HTTP response codes to indicate success or failure of an API request. Codes in the 2xx range indicate success. Codes in the 4xx range indicate an error that resulted from the provided information. Codes in the 5xx range indicate an error with Shore&rsquo;s servers.</p>
+
+<h3 id="http-status-code-summary">HTTP Status Code Summary</h3>
+
+<table class="attributes">
+  <tr>
+    <td>400</td>
+    <td>Bad Request &ndash; Your request sucks</td>
+  </tr>
+  <tr>
+    <td>401</td>
+    <td>Unauthorized &ndash; Your API key is wrong</td>
+  </tr>
+  <tr>
+    <td>403</td>
+    <td>Forbidden &ndash; The requested is hidden for authorized users only</td>
+  </tr>
+  <tr>
+    <td>404</td>
+    <td>Not Found &ndash; The specified resource could not be found</td>
+  </tr>
+  <tr>
+    <td>405</td>
+    <td>Method Not Allowed &ndash; You tried to access a resource with an invalid method</td>
+  </tr>
+  <tr>
+    <td>406</td>
+    <td>Not Acceptable &ndash; You requested a format that isn&rsquo;t json</td>
+  </tr>
+  <tr>
+    <td>410</td>
+    <td>Gone &ndash; The resource requested has been removed from our servers</td>
+  </tr>
+  <tr>
+    <td>418</td>
+    <td>I&rsquo;m a teapot</td>
+  </tr>
+  <tr>
+    <td>429</td>
+    <td>Too Many Requests &ndash; You&rsquo;re requesting too many resources! Slow down!</td>
+  </tr>
+  <tr>
+    <td>500</td>
+    <td>Internal Server Error &ndash; We had a problem with our server. Try again later.</td>
+  </tr>
+  <tr>
+    <td>503</td>
+    <td>Service Unavailable &ndash; We&rsquo;re temporarially offline for maintanance. Please try again later.</td>
+  </tr>
+</table>
 
           <h1 id="customers">Customers</h1>
 
