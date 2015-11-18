@@ -1,0 +1,511 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>API Reference</title>
+
+    <link href="stylesheets/screen.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="stylesheets/print.css" rel="stylesheet" type="text/css" media="print" />
+    <link href="stylesheets/custom.css" rel="stylesheet" type="text/css" />
+
+    <script src="javascripts/lib/jquery.min.js" type="text/javascript"></script>
+
+      <script src="javascripts/all_nosearch.js" type="text/javascript"></script>
+
+    <link href="stylesheets/prism.css" rel="stylesheet" type="text/css" />
+
+  </head>
+
+  <body class="index">
+    <a href="#" id="nav-button">
+      <span>
+        NAV
+        <img src="images/navbar.png" />
+      </span>
+    </a>
+    <div class="tocify-wrapper">
+      <h1>Shore <b>API</b></h1>
+
+
+      <div id="toc">
+      </div>
+    </div>
+
+    <div class="page-wrapper">
+      <div class="dark-box"></div>
+      <div class="content">
+        <h1 id="introduction">Introduction</h1>
+
+<aside class="warning">This document resembles a WORK IN PROGRESS state. The described endpoints are open to change and will be finalized in the near future.</aside>
+
+          <h1 id="authentication">Authentication</h1>
+
+<blockquote>
+<p>Example Request</p>
+</blockquote>
+
+<pre><code class="language-curl">$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
+  -u Mzs6i13SUB16xfyGFAm4:
+</code></pre>
+
+<blockquote>
+<p>curl uses the -u flag to pass basic auth credentials (adding a colon after your API key will prevent it from asking you for a password).</p>
+</blockquote>
+
+<p>You authenticate to the Shore API by providing one of your API key in the request.</p>
+
+<p>TODO: You can manage your API keys from your account. You can have multiple API keys active at one time. Your API keys carry many privileges, so be sure to keep them secret!</p>
+
+<p>Authentication to the API occurs via HTTP Basic Auth. Provide your API key as the basic auth username. You do not need to provide a password. All API requests must be made over HTTPS. Calls made over plain HTTP will fail. You must authenticate for all requests.</p>
+
+          <h1 id="errors">Errors</h1>
+
+<p>Shore uses conventional HTTP response codes to indicate success or failure of an API request. Codes in the 2xx range indicate success. Codes in the 4xx range indicate an error that resulted from the provided information. Codes in the 5xx range indicate an error with Shore&rsquo;s servers.</p>
+
+<h3 id="http-status-code-summary">HTTP Status Code Summary</h3>
+
+<table class="attributes">
+  <tr>
+    <td>400</td>
+    <td>Bad Request &ndash; Your request sucks</td>
+  </tr>
+  <tr>
+    <td>401</td>
+    <td>Unauthorized &ndash; Your API key is wrong</td>
+  </tr>
+  <tr>
+    <td>403</td>
+    <td>Forbidden &ndash; The requested is hidden for authorized users only</td>
+  </tr>
+  <tr>
+    <td>404</td>
+    <td>Not Found &ndash; The specified resource could not be found</td>
+  </tr>
+  <tr>
+    <td>405</td>
+    <td>Method Not Allowed &ndash; You tried to access a resource with an invalid method</td>
+  </tr>
+  <tr>
+    <td>406</td>
+    <td>Not Acceptable &ndash; You requested a format that isn&rsquo;t json</td>
+  </tr>
+  <tr>
+    <td>410</td>
+    <td>Gone &ndash; The resource requested has been removed from our servers</td>
+  </tr>
+  <tr>
+    <td>418</td>
+    <td>I&rsquo;m a teapot</td>
+  </tr>
+  <tr>
+    <td>429</td>
+    <td>Too Many Requests &ndash; You&rsquo;re requesting too many resources! Slow down!</td>
+  </tr>
+  <tr>
+    <td>500</td>
+    <td>Internal Server Error &ndash; We had a problem with our server. Try again later.</td>
+  </tr>
+  <tr>
+    <td>503</td>
+    <td>Service Unavailable &ndash; We&rsquo;re temporarially offline for maintanance. Please try again later.</td>
+  </tr>
+</table>
+
+          <h1 id="customers">Customers</h1>
+
+<p>The Customer Store Service is used for serving any kind of customer related information.</p>
+
+<h2 id="get-/:oid/customers">GET /:oid/customers</h2>
+
+<blockquote>
+<p>Example Request</p>
+</blockquote>
+
+<pre><code class="language-curl">curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
+  -u Mzs6i13SUB16xfyGFAm4:
+</code></pre>
+
+<blockquote>
+<p>Example Response</p>
+</blockquote>
+
+<pre><code class="language-javascript">{
+  &quot;meta&quot;: {
+    &quot;current_page&quot;: 1,
+    &quot;total_pages&quot;: 3,
+    &quot;per_page&quot;: 25
+  },
+
+  &quot;customers&quot;: [
+  ]
+}
+</code></pre>
+
+<p>Retrieves all customers for a given organization id. The result is paginated.</p>
+
+<h3 id="request-url">Request URL</h3>
+
+<p><code>https://api.shore.com/v1/:oid/customers</code></p>
+
+<h3 id="request-params">Request Params</h3>
+
+<table class="attributes">
+  <tr>
+    <td>oid<div>String, <span class="req">Required</span></div></td>
+    <td>The organization id</td>
+  </tr>
+</table>
+
+<h3 id="reponse-code">Reponse Code</h3>
+
+<p><code>200</code></p>
+
+<h2 id="get-/:oid/customers/:id">GET /:oid/customers/:id</h2>
+
+<blockquote>
+<p>Example Request</p>
+</blockquote>
+
+<pre><code class="language-curl">$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6 \
+  -u Mzs6i13SUB16xfyGFAm4:
+</code></pre>
+
+<blockquote>
+<p>Example Response</p>
+</blockquote>
+
+<pre><code class="language-javascript">{
+  &quot;id&quot;: &quot;522f78b8-6f39-4dce-be8e-ce0fc0f816e6&quot;,
+
+  &quot;created_at&quot;: &quot;2015-03-26T18:33:10.545+01:00&quot;,
+  &quot;updated_at&quot;: &quot;2015-03-26T18:33:10.545+01:00&quot;,
+
+  &quot;locale&quot;: &quot;de-DE&quot;,
+
+  &quot;identity&quot;: {
+    &quot;gender&quot;: &quot;male&quot;,
+    &quot;first&quot;: &quot;John&quot;,
+    &quot;last&quot;: &quot;Doe&quot;
+  },
+
+  &quot;groups&quot;: [
+    {
+      &quot;name&quot;: &quot;category&quot;,
+      &quot;value&quot;: &quot;VIP&quot;
+    }
+  ],
+
+  &quot;addresses&quot;: [
+    {
+      &quot;line1&quot;: &quot;Rosenheimer Str 145e&quot;,
+      &quot;line2&quot;: &quot;1st floor&quot;,
+      &quot;city&quot;: &quot;Munich&quot;,
+      &quot;state&quot;: &quot;Bavaria&quot;,
+      &quot;zip&quot;: &quot;81671&quot;,
+      &quot;country&quot;: &quot;Germany&quot;
+    }, {
+      &quot;...&quot;: &quot;...&quot;
+    }
+  ],
+
+  &quot;dates&quot;: [
+    {
+      &quot;name&quot;: &quot;birthday&quot;,  // birthday, anniversary, other
+      &quot;value&quot;: &quot;2015-03-26&quot;
+    }, {
+      &quot;...&quot;: &quot;...&quot;
+    }
+  ],
+
+  &quot;emails&quot;: [
+    {
+      &quot;primary&quot;: true,
+      &quot;name&quot;: &quot;home&quot;, // home, work, other
+      &quot;value&quot;: &quot;john.doe@example.com&quot;
+    }, {
+      &quot;...&quot;: &quot;...&quot;
+    }
+  ],
+
+  &quot;phones&quot;: [
+    {
+      &quot;primary&quot;: true,
+      &quot;name&quot;: &quot;mobile&quot;, // mobile, work, home, work-fax, home-fax, other
+      &quot;value&quot;: &quot;123456789&quot;
+    }, {
+      &quot;...&quot;: &quot;...&quot;
+    }
+  ],
+
+  &quot;urls&quot;: [
+    {
+      &quot;name&quot;: &quot;website&quot;, // website, other
+      &quot;value&quot;: &quot;http://www.example.com&quot;
+    }, {
+      &quot;...&quot;: &quot;...&quot;
+    }
+  ],
+
+  &quot;attributes&quot;: [
+    {
+      &quot;name&quot;: &quot;description&quot;,
+      &quot;value&quot;: &quot;Some custom definde attribute&quot;
+    }, {
+      &quot;...&quot;: &quot;...&quot;
+    }
+  ]
+}
+</code></pre>
+
+<p>Retrieves the details of an existing customer.</p>
+
+<h3 id="request-url">Request URL</h3>
+
+<p><code>https://api.shore.com/v1/:oid/customers/:id</code></p>
+
+<h3 id="request-params">Request Params</h3>
+
+<table class="attributes">
+  <tr>
+    <td>oid<div>String, <span class="req">Required</span></div></td>
+    <td>The organization id</td>
+  </tr>
+  <tr>
+    <td>id<div>String, <span class="req">Required</span></div></td>
+    <td>The customer id</td>
+  </tr>
+</table>
+
+<h3 id="response-code">Response Code</h3>
+
+<p><code>200</code></p>
+
+<h2 id="post-/:oid/customers">POST /:oid/customers</h2>
+
+<blockquote>
+<p>Example Request</p>
+</blockquote>
+
+<pre><code class="language-curl">$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers \
+  -X POST \
+  -u Mzs6i13SUB16xfyGFAm4: \
+  -d &#39;{
+    &quot;identity&quot;: {
+      &quot;first&quot;: &quot;John&quot;,
+      &quot;last&quot;: &quot;Doe&quot;
+    }
+  }&#39;
+</code></pre>
+
+<blockquote>
+<p>Example Response</p>
+</blockquote>
+
+<pre><code class="language-javascript">{
+  &quot;id&quot;: &quot;522f78b8-6f39-4dce-be8e-ce0fc0f816e6&quot;,
+
+  &quot;created_at&quot;: &quot;2015-03-26T18:33:10.545+01:00&quot;,
+  &quot;updated_at&quot;: &quot;2015-03-26T18:33:10.545+01:00&quot;,
+
+  &quot;identity&quot;: {
+    &quot;first&quot;: &quot;John&quot;,
+    &quot;last&quot;: &quot;Doe&quot;
+  }
+}
+</code></pre>
+
+<p>Creates a new customer record.</p>
+
+<h3 id="request-url">Request URL</h3>
+
+<p><code>https://api.shore.com/v1/:oid/customers</code></p>
+
+<h3 id="request-params">Request Params</h3>
+
+<table class="attributes">
+  <tr>
+    <td>oid<div>String, <span class="req">Required</span></div></td>
+    <td>The organization id</td>
+  </tr>
+</table>
+
+<h3 id="response-code">Response Code</h3>
+
+<p><code>201</code></p>
+
+<h2 id="patch-/:oid/customers/:id">PATCH /:oid/customers/:id</h2>
+
+<blockquote>
+<p>Example Request</p>
+</blockquote>
+
+<pre><code class="language-curl">$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6
+  -X PATCH \
+  -u Mzs6i13SUB16xfyGFAm4: \
+  -d &#39;{
+    &quot;identity&quot;: {
+      &quot;first&quot;: &quot;Jane&quot;
+    }
+  }&#39;
+</code></pre>
+
+<blockquote>
+<p>Example Response</p>
+</blockquote>
+
+<pre><code class="language-javascript">{
+  &quot;id&quot;: &quot;522f78b8-6f39-4dce-be8e-ce0fc0f816e6&quot;,
+
+  &quot;created_at&quot;: &quot;2015-03-26T18:33:10.545+01:00&quot;,
+  &quot;updated_at&quot;: &quot;2015-03-26T18:33:10.545+01:00&quot;,
+
+  &quot;identity&quot;: {
+    &quot;first&quot;: &quot;Jane&quot;,
+    &quot;last&quot;: &quot;Doe&quot;
+  }
+}
+</code></pre>
+
+<p>Updates the customer by setting the values of the passed parameters. Any parameters not provided will be left unchanged.</p>
+
+<h3 id="request-url">Request URL</h3>
+
+<p><code>https://api.shore.com/v1/:oid/customers/:id</code></p>
+
+<h3 id="request-params">Request Params</h3>
+
+<table class="attributes">
+  <tr>
+    <td>oid<div>String, <span class="req">Required</span></div></td>
+    <td>The organization id</td>
+  </tr>
+  <tr>
+    <td>id<div>String, <span class="req">Required</span></div></td>
+    <td>The customer id</td>
+  </tr>
+</table>
+
+<h3 id="response-code">Response Code</h3>
+
+<p><code>200</code></p>
+
+<h2 id="delete-/:oid/customers/:id">DELETE /:oid/customers/:id</h2>
+
+<blockquote>
+<p>Example Request</p>
+</blockquote>
+
+<pre><code class="language-curl">$ curl https://api.shore.com/v1/4eadc0f0-45d1-4a8c-91b4-ca5d82910135/customers/522f78b8-6f39-4dce-be8e-ce0fc0f816e6 \
+  -X DELETE \
+  -u Mzs6i13SUB16xfyGFAm4:
+</code></pre>
+
+<blockquote>
+<p>Example Response</p>
+</blockquote>
+
+<pre><code class="language-jvascript">{
+  &quot;id&quot;: &quot;522f78b8-6f39-4dce-be8e-ce0fc0f816e6&quot;,
+  &quot;deleted_at&quot;: &quot;2015-03-26T18:33:10.545+01:00&quot;
+}
+</code></pre>
+
+<p>Permanently deletes a customer. It cannot be undone. Upon deletion, the response returns the <code>deleted_at</code> date.</p>
+
+<h3 id="request-url">Request URL</h3>
+
+<p><code>https://api.shore.com/v1/:oid/customers</code></p>
+
+<h3 id="request-params">Request Params</h3>
+
+<table class="attributes">
+  <tr>
+    <td>oid<div>String, <span class="req">Required</span></div></td>
+    <td>The organization id</td>
+  </tr>
+</table>
+
+<h3 id="response-code">Response Code</h3>
+
+<p><code>201</code></p>
+
+      </div>
+
+      <div class="dark-box">
+      </div>
+    </div>
+
+    <script src="javascripts/prism.js" type="text/javascript"></script>
+    <script>
+Prism.languages.curl = Prism.languages.extend('bash', {
+  'keyword': /\b(curl)\b/,
+
+  // anything like "*://*"
+  'function': /(?:\ )([^ ]+):\/\/([^ ]+)/,
+
+  // -d OR --data
+  'operator': {
+    pattern: /(--?\w+)\s*?(.+)/ig,
+    inside: {
+      'property': /(\S+):(\S+)?/,
+      'punctuation': /[\:\\]/
+    }
+  },
+
+  // key='value'
+  'property': {
+    'pattern': /(\S+)(?:\=)/i,
+    'inside': {
+      'punctuation': /[=]/,
+    }
+  },
+
+  'punctuation': /[\\]/
+});
+
+Prism.languages.insertBefore('curl', 'operator', {
+  'property': {
+    pattern: /(-u|--user)\s*(.+)/g,
+    inside: {
+      'operator': /(^-u|--user)/,
+      'punctuation': /[\:\\]/
+    }
+  }
+});
+
+/*
+Prism.languages.insertBefore("bash", "operator", {
+  "api-key": {
+    pattern: /(?:-u )([a-zA-Z0-9_]+)/g,
+    inside: {
+      "request-flag": /(^-u)/g
+    }
+  },
+  "request-param": {
+    pattern: /(?:-d )([a-zA-Z0-9]+)/g,
+    inside: {
+      "request-flag": /(^-d)/g
+    }
+  },
+  "request-value": {
+    pattern: /(?:=)(.*?)(?:\n|\\)/g,
+    inside: {
+      operator: /(^=)|(\\$)/g
+    }
+  }
+});
+
+Prism.languages.insertBefore("bash", "number", {
+  "request-url": {
+    pattern: /(?:^curl )(.*?)(?:\n|\\)/g,
+    inside: {
+      operator: /(\\$)/g,
+      keyword: /(^curl)/g
+    }
+  }
+*/
+    </script>
+  </body>
+</html>
