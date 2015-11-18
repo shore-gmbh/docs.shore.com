@@ -3,7 +3,10 @@
 Shore acts as a CalDAV server and provides a subset of the [CalDAV protocol](
 https://tools.ietf.org/html/rfc4791) and thereby also a subset of the
 [WebDAV protocol](https://tools.ietf.org/html/rfc4918#section-9.1).
-CalDAV conform clients can request the following endpoints.
+CalDAV conform clients can request the following endpoints. Login to your
+[Shore account](https://secure.shore.com/merchant/account) to obtain your
+CalDAV calendar urls and for instructions on configuring supported
+3rd-party CalDAV clients.
 
 ## OPTIONS /caldav/user
 
