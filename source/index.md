@@ -5,6 +5,8 @@ includes:
   - authentication
   - errors
   - customers
+  - merchant_api
+  - caldav
 ---
 
 # Introduction
