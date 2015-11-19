@@ -193,6 +193,7 @@ Propose an alternative time for the appointment request with the given id belong
 
 ```language-curl
 $ curl https://api.shore.com/api/merchant/appointments/1234/accept \
+  -X PUT \
   -H 'Accept: application/vnd.termine24.de; version=3'
   -H 'client_id: de.termine24.dienstleister.ios.1'
   -H 'client_secret: secret'
@@ -301,6 +302,7 @@ Accept the appointment request with the given id belonging to the current mercha
     <td>id<div>String, <span class="req">Required</span></div></td>
     <td>Mandatory. Appointment#id to accept</td>
   </tr>
+</table>
 
 ### Request Headers
 <table class="attributes">
@@ -338,17 +340,21 @@ Accept the appointment request with the given id belonging to the current mercha
 
 ### Response Code
 * `200` Success
-* `400` Appointment could not be rejected (e.g. already rejected)
+* `400` Appointment could not be accepted (e.g. already rejected)
 * `404` Appointment with the given id does not exist
 * `401` Authorization token is missing or is not valid
 * `401` Client headers are missing or not valid
 
-POST /api/merchant/appointments/
+
+## POST /api/merchant/appointments/
 
 > Example Request
 
 ```language-curl
 $ curl https://api.shore.com/api/merchant/appointments \
+  -X POST \
+  -d datetime='2014-07-16T19:20+01:00'
+  -d duration='60'
   -H 'Accept: application/vnd.termine24.de; version=3'
   -H 'client_id: de.termine24.dienstleister.ios.1'
   -H 'client_secret: secret'
@@ -452,7 +458,84 @@ Create a new appointment with the given parameters.
 `https://api.shore.com/api/merchant/appointments`
 
 ### Request parameters
-
+<table class="attributes">
+  <tr>
+    <td>datetime<div>String, <span class="req">Required</span></div></td>
+    <td>Mandatory: Date + time of appointment in ISO8601
+        format (see http://www.w3.org/TR/NOTE-datetime)</td>
+  </tr>
+  <tr>
+    <td>service_ids<div>JSON Array, <span class="opt">Optional</span></div></td>
+    <td>list of service ids {Service} performed during the appointment.
+        See {Api::Merchant::V3::ServicesController#index}.
+        Appointment duration, pre-duration and post-duration are set to
+        this service's values unless otherwise specified in the parameters.</td>
+  </tr>
+  <tr>
+    <td>duration<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>Duration of the appointment in minutes. Defaults to duration
+        of the given service or 60 if no service defined.</td>
+  </tr>
+  <tr>
+    <td>required_capacity<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>Number of participants for the appointment (positive integer).</td>
+  </tr>
+  <tr>
+    <td>subject<div>String, <span class="opt">Optional</span></div></td>
+    <td>Text description of the appointment.
+        should receive a reminder via the merchant's notification
+        channels. Default is "24".</td>
+  </tr>
+  <tr>
+    <td>attachments<div>JSON Array, <span class="opt">Optional</span></div></td>
+    <td>JSON array of attachment ids recieved from FSS.</td>
+  </tr>
+  <tr>
+    <td>resource_ids<div>JSON Array, <span class="opt">Optional</span></div></td>
+    <td>JSON array of {Resource#id}s.</td>
+  </tr>
+  <tr>
+    <td>customer_id<div>String, <span class="opt">Optional</span></div></td>
+    <td>{MerchantCustomer#id} of the customer for the appointment</td>
+  </tr>
+  <tr>
+    <td>participating_account_ids<div>JSON Array, <span class="opt">Optional</span></div></td>
+    <td>list of participating account ids</td>
+  </tr>
+  <tr>
+    <td>color<div>String, <span class="opt">Optional</span></div></td>
+    <td>String representing the HEX color code</td>
+  </tr>
+  <tr>
+    <td>inform_customer<div>Boolean, <span class="opt">Optional</span></div></td>
+    <td>If "true", a message will be sent to the appointment's
+        customer's notification channels.</td>
+  </tr>
+  <tr>
+    <td>customer[last_name]<div>String, <span class="opt">Optional</span></div></td>
+    <td>Customer's last name. This and the following customer[*] parameters add
+        this customer data to the appointment. Additionally,
+        if the customer_id is given then this data is merged with the existing data for that MerchantCustomer.
+        If no customer_id is given and no matching MerchantCustomer can be found, then a new
+        MerchantCustomer is created.</td>
+  </tr>
+  <tr>
+    <td>customer[first_name]<div>String, <span class="opt">Optional</span></div></td>
+    <td>Customer's first name</td>
+  </tr>
+  <tr>
+    <td>customer[gender]<div>String, <span class="opt">Optional</span></div></td>
+    <td>Customer's gender "male" or "female"</td>
+  </tr>
+  <tr>
+    <td>customer[email]<div>String, <span class="opt">Optional</span></div></td>
+    <td>Customer's email address</td>
+  </tr>
+  <tr>
+    <td>customer[mobile]<div>String, <span class="opt">Optional</span></div></td>
+    <td>Customer's mobile phone number</td>
+  </tr>
+</table>
 
 ### Request Headers
 <table class="attributes">
@@ -514,87 +597,89 @@ $ curl https://api.shore.com/api/merchant/appointments \
 
 ```language-javascript
 {
-  "appointment": {
-    "id":1234,
-    "phase": 1,                             # 0 = open, 1 = will take place, 2 = will not take place or already did take place
-    "accepted_state": 10,                   # 10 (pending), 11 (accepted), 12 (cancelled)
-    "action_required_by": 0,                # 0 = no action required, 1 = merchant action required, 2 = customer action required
-    "human_state": "Termin findet statt"    # Localized description of the appointment's
-                                            # current state from the merchant's perspective
-    "datetime":"2014-07-16T19:20:00+02:00",
-    "datetime_end":"2014-07-16T19:50:00+02:00",
-    "duration": 30,
-    "pre_duration": 0,
-    "post_duration": 15,
-    "service_name": "Reservierung, Anderes"   # Names of the services booked or null if none booked
-    "human_price": "638,95 €",                # Price as formatted string or null if free
-    "color": null,                            # Color assigned to the Appointment. "/#[0-9a-f]{6}/i" or "null".
-    "attachments": ["123"],                   # JSON array of attachment ids from FSS.
-    "attachments_info": [                         # Array of attachments with meta information about each attachment
-      {
-        "id": "123"                               # id of attachment
-        "filename": "image.jpg",                  # filename
-        "url": "http://fss.shore.com/image.jpg",  # url to the uploaded file (you will be redirected to amazon afterwards)
-        "attachment_label": "Attachments",        # label to show for attachment
-        "deletable": false                        # is it allowed to delete this attachment
+  "appointments": [
+    {
+      "id":1234,
+      "phase": 1,                             # 0 = open, 1 = will take place, 2 = will not take place or already did take place
+      "accepted_state": 10,                   # 10 (pending), 11 (accepted), 12 (cancelled)
+      "action_required_by": 0,                # 0 = no action required, 1 = merchant action required, 2 = customer action required
+      "human_state": "Termin findet statt"    # Localized description of the appointment's
+                                              # current state from the merchant's perspective
+      "datetime":"2014-07-16T19:20:00+02:00",
+      "datetime_end":"2014-07-16T19:50:00+02:00",
+      "duration": 30,
+      "pre_duration": 0,
+      "post_duration": 15,
+      "service_name": "Reservierung, Anderes"   # Names of the services booked or null if none booked
+      "human_price": "638,95 €",                # Price as formatted string or null if free
+      "color": null,                            # Color assigned to the Appointment. "/#[0-9a-f]{6}/i" or "null".
+      "attachments": ["123"],                   # JSON array of attachment ids from FSS.
+      "attachments_info": [                         # Array of attachments with meta information about each attachment
+        {
+          "id": "123"                               # id of attachment
+          "filename": "image.jpg",                  # filename
+          "url": "http://fss.shore.com/image.jpg",  # url to the uploaded file (you will be redirected to amazon afterwards)
+          "attachment_label": "Attachments",        # label to show for attachment
+          "deletable": false                        # is it allowed to delete this attachment
+        },
+        ...
+      ],
+      "human_additional_information": {         # Mandatory. Can be {}. Keys are not predefined.
+                                                # This is just an example of possible keys.
+        "required_capacity": {                  # Each key always has a non-localized key
+          "human_key": "Personenzahl",          # Each key always has the localized key
+          "value": "5 Personen"               # Each key always has the string value
+        },
+        "subject": {                            # This is a commonly defined key. It
+          "human_key": "Betreff",               # is optionally set when the merchant
+          "value=>"the subject"                 # creates an appointment
+        }
+        "reason_for_booking": {                 # This is a commonly defined key. It
+          "human_key": "Termindetails",         # is optionally set when the customer
+          "value": "I want to celebrate party." # creates an appointment
+        },
+        ... Different keys or additional keys may be present ...
       },
-      ...
-    ],
-    "human_additional_information": {         # Mandatory. Can be {}. Keys are not predefined.
-                                              # This is just an example of possible keys.
-      "required_capacity": {                  # Each key always has a non-localized key
-        "human_key": "Personenzahl",          # Each key always has the localized key
-        "value": "5 Personen"               # Each key always has the string value
-      },
-      "subject": {                            # This is a commonly defined key. It
-        "human_key": "Betreff",               # is optionally set when the merchant
-        "value=>"the subject"                 # creates an appointment
+      "customer": {
+        "id":1234,                  # MerchantCustomer#id
+        "uuid":1234,                # MerchantCustomer#uuid
+        "title":"Herr",             # localized title (e.g. Herr/Frau) or null if title not known
+        "first_name":"Max",         # first name or null if not known
+        "last_name":"Mustermann",   # last name
+        "email":"max@mail.de",      # contact email or null if not known
+        "mobile":"017623648372",    # contact mobile phone number or null if they have none
+        "deleted":false             # true if the customer has been deleted, otherwise false
       }
-      "reason_for_booking": {                 # This is a commonly defined key. It
-        "human_key": "Termindetails",         # is optionally set when the customer
-        "value": "I want to celebrate party." # creates an appointment
-      },
-      ... Different keys or additional keys may be present ...
-    },
-    "customer": {
-      "id":1234,                  # MerchantCustomer#id
-      "uuid":1234,                # MerchantCustomer#uuid
-      "title":"Herr",             # localized title (e.g. Herr/Frau) or null if title not known
-      "first_name":"Max",         # first name or null if not known
-      "last_name":"Mustermann",   # last name
-      "email":"max@mail.de",      # contact email or null if not known
-      "mobile":"017623648372",    # contact mobile phone number or null if they have none
-      "deleted":false             # true if the customer has been deleted, otherwise false
-    }
-    "services": [                                 # Optional. Can be empty though. Exists since V3.2.
-      {
-        "id":"the-service-id",      # Service#id
-        "name":"Bikini Waxing",     # Service#name
-      }
-    ],
-    "resources": [                                # Optional. Can be empty though. Exists since V3.1.
-      {
-        "id":1234,        # Resource#id
-        "name":"Table 2", # Resource#name
-      }
-    ],
-    "steps": [                                    # Optional. Can be empty though or can also be null when
-                                                  # appointment was created without steps. Exists since V3.2.
-      {
-        "type": 'work',                   # There are 4 types of steps:
-                                          #   1) 'pre_processing'. Must comes first. Preparation step to start 'work'.
-                                          #   2) [default] 'work'. If no types specified than 'work' used as default.
-                                          #                        Marks the start and end of the appointment for the customer.
-                                          #   3) 'break'. Doesn't change the availability of the resource.
-                                          #   4) 'post_processing' Must comes last. Step after 'work' finished.
-        "duration": 30,                   # ServiceStep#duration in minutes. Default value is 30 minutes.
-        "name": 'Step Name',              # ServiceStep#name. Default value is empty string.
-        "resource_ids": ['1234', '5678']  # Default value is empty array.
-                                          # '1234' and '5678' are Resource#id. step#resource_ids are no such as ids in appointment#resources
+      "services": [                                 # Optional. Can be empty though. Exists since V3.2.
+        {
+          "id":"the-service-id",      # Service#id
+          "name":"Bikini Waxing",     # Service#name
+        }
+      ],
+      "resources": [                                # Optional. Can be empty though. Exists since V3.1.
+        {
+          "id":1234,        # Resource#id
+          "name":"Table 2", # Resource#name
+        }
+      ],
+      "steps": [                                    # Optional. Can be empty though or can also be null when
+                                                    # appointment was created without steps. Exists since V3.2.
+        {
+          "type": 'work',                   # There are 4 types of steps:
+                                            #   1) 'pre_processing'. Must comes first. Preparation step to start 'work'.
+                                            #   2) [default] 'work'. If no types specified than 'work' used as default.
+                                            #                        Marks the start and end of the appointment for the customer.
+                                            #   3) 'break'. Doesn't change the availability of the resource.
+                                            #   4) 'post_processing' Must comes last. Step after 'work' finished.
+          "duration": 30,                   # ServiceStep#duration in minutes. Default value is 30 minutes.
+          "name": 'Step Name',              # ServiceStep#name. Default value is empty string.
+          "resource_ids": ['1234', '5678']  # Default value is empty array.
+                                            # '1234' and '5678' are Resource#id. step#resource_ids are no such as ids in appointment#resources
 
-      }
-    ]
-  }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -604,7 +689,39 @@ List this merchant's appointments sorted by the Appointment#datetime oldest firs
 `https://api.shore.com/api/merchant/appointments`
 
 ### Request parameters
-
+<table class="attributes">
+  <tr>
+    <td>accepted_states<div>String, <span class="req">Required</span></div></td>
+    <td>Returns only the appointments with the given integer
+        state separated by '|' to filter for
+        appointments with state1 OR state2 OR stateN.
+        if not provided - uses phases.
+        10 (pending), 11 (accepted), and 12 (cancelled). Note: This parameter
+        cannot be used in combination of the phases parameter!</td>
+  </tr>
+  <tr>
+    <td>page<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>The current page of the results. Default is "1"</td>
+  </tr>
+  <tr>
+    <td>per_page<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>The number of results per page. Default is "10". Set
+        to "0" for unlimited results per page.</td>
+  </tr>
+  <tr>
+    <td>after<div>ISO8601 String, <span class="opt">Optional</span></div></td>
+    <td>Return only appointments whose datetime is >= 'after'.</td>
+  </tr>
+  <tr>
+    <td>before<div>ISO8601 String, <span class="opt">Optional</span></div></td>
+    <td>Return only appointments whose datetime is <= 'before'.</td>
+  </tr>
+  <tr>
+    <td>order<div>String, <span class="opt">Optional</span></div></td>
+    <td>Allowed values are "asc" and "desc". Default: "asc".
+        Specifies ordering by datetime of the appointments.</td>
+  </tr>
+</table>
 
 ### Request Headers
 <table class="attributes">
@@ -642,8 +759,7 @@ List this merchant's appointments sorted by the Appointment#datetime oldest firs
 
 ### Response Code
 * `200` Success
-* `400` Appointment could not be rejected (e.g. already rejected)
-* `404` Appointment with the given id does not exist
+* `400` Invalid parameter(s): <reason for being invalid>
 * `401` Authorization token is missing or is not valid
 * `401` Client headers are missing or not valid
 
@@ -653,6 +769,7 @@ List this merchant's appointments sorted by the Appointment#datetime oldest firs
 
 ```language-curl
 $ curl https://api.shore.com/api/merchant/appointments/:id/reject \
+  -X PUT
   -H 'Accept: application/vnd.termine24.de; version=3'
   -H 'client_id: de.termine24.dienstleister.ios.1'
   -H 'client_secret: secret'
@@ -756,7 +873,16 @@ Reject the appointment request with the given id belonging to the current mercha
 `https://api.shore.com/api/merchant/appointments/:id/reject`
 
 ### Request parameters
-
+<table class="attributes">
+  <tr>
+    <td>id<div>String, <span class="req">Required</span></div></td>
+    <td>Appointment#id to reject</td>
+  </tr>
+  <tr>
+    <td>reason<div>String, <span class="opt">Optional</span></div></td>
+    <td>Text reason for the rejection. Default is null.</td>
+  </tr>
+</table>
 
 ### Request Headers
 <table class="attributes">
@@ -908,7 +1034,12 @@ Show the appointment with the given id.
 `https://api.shore.com/api/merchant/appointments/:id`
 
 ### Request parameters
-
+<table class="attributes">
+  <tr>
+    <td>id<div>String, <span class="req">Required</span></div></td>
+    <td>ID of the Appointment to show</td>
+  </tr>
+</table>
 
 ### Request Headers
 <table class="attributes">
@@ -946,7 +1077,6 @@ Show the appointment with the given id.
 
 ### Response Code
 * `200` Success
-* `400` Appointment could not be rejected (e.g. already rejected)
 * `404` Appointment with the given id does not exist
 * `401` Authorization token is missing or is not valid
 * `401` Client headers are missing or not valid
@@ -957,6 +1087,7 @@ Show the appointment with the given id.
 
 ```language-curl
 $ curl https://api.shore.com/api/merchant/appointments/:id \
+  -X PUT
   -H 'Accept: application/vnd.termine24.de; version=3'
   -H 'client_id: de.termine24.dienstleister.ios.1'
   -H 'client_secret: secret'
@@ -1060,7 +1191,84 @@ Update an appointment with the given parameters.
 `https://api.shore.com/api/merchant/appointments/:id`
 
 ### Request parameters
-
+<table class="attributes">
+  <tr>
+    <td>datetime<div>String, <span class="req">Required</span></div></td>
+    <td>Mandatory: Date + time of appointment in ISO8601
+        format (see http://www.w3.org/TR/NOTE-datetime)</td>
+  </tr>
+  <tr>
+    <td>service_ids<div>JSON Array, <span class="opt">Optional</span></div></td>
+    <td>list of service ids {Service} performed during the appointment.
+        See {Api::Merchant::V3::ServicesController#index}.
+        Appointment duration, pre-duration and post-duration are set to
+        this service's values unless otherwise specified in the parameters.</td>
+  </tr>
+  <tr>
+    <td>duration<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>Duration of the appointment in minutes. Defaults to duration
+        of the given service or 60 if no service defined.</td>
+  </tr>
+  <tr>
+    <td>required_capacity<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>Number of participants for the appointment (positive integer).</td>
+  </tr>
+  <tr>
+    <td>subject<div>String, <span class="opt">Optional</span></div></td>
+    <td>Text description of the appointment.
+        should receive a reminder via the merchant's notification
+        channels. Default is "24".</td>
+  </tr>
+  <tr>
+    <td>attachments<div>JSON Array, <span class="opt">Optional</span></div></td>
+    <td>JSON array of attachment ids recieved from FSS.</td>
+  </tr>
+  <tr>
+    <td>resource_ids<div>JSON Array, <span class="opt">Optional</span></div></td>
+    <td>JSON array of {Resource#id}s.</td>
+  </tr>
+  <tr>
+    <td>customer_id<div>String, <span class="opt">Optional</span></div></td>
+    <td>{MerchantCustomer#id} of the customer for the appointment</td>
+  </tr>
+  <tr>
+    <td>participating_account_ids<div>JSON Array, <span class="opt">Optional</span></div></td>
+    <td>list of participating account ids</td>
+  </tr>
+  <tr>
+    <td>color<div>String, <span class="opt">Optional</span></div></td>
+    <td>String representing the HEX color code</td>
+  </tr>
+  <tr>
+    <td>inform_customer<div>Boolean, <span class="opt">Optional</span></div></td>
+    <td>If "true", a message will be sent to the appointment's
+        customer's notification channels.</td>
+  </tr>
+  <tr>
+    <td>customer[last_name]<div>String, <span class="opt">Optional</span></div></td>
+    <td>Customer's last name. This and the following customer[*] parameters add
+        this customer data to the appointment. Additionally,
+        if the customer_id is given then this data is merged with the existing data for that MerchantCustomer.
+        If no customer_id is given and no matching MerchantCustomer can be found, then a new
+        MerchantCustomer is created.</td>
+  </tr>
+  <tr>
+    <td>customer[first_name]<div>String, <span class="opt">Optional</span></div></td>
+    <td>Customer's first name</td>
+  </tr>
+  <tr>
+    <td>customer[gender]<div>String, <span class="opt">Optional</span></div></td>
+    <td>Customer's gender "male" or "female"</td>
+  </tr>
+  <tr>
+    <td>customer[email]<div>String, <span class="opt">Optional</span></div></td>
+    <td>Customer's email address</td>
+  </tr>
+  <tr>
+    <td>customer[mobile]<div>String, <span class="opt">Optional</span></div></td>
+    <td>Customer's mobile phone number</td>
+  </tr>
+</table>
 
 ### Request Headers
 <table class="attributes">
@@ -1098,7 +1306,7 @@ Update an appointment with the given parameters.
 
 ### Response Code
 * `200` Success
-* `400` Appointment could not be rejected (e.g. already rejected)
+* `400` Appointment could not be updated
 * `404` Appointment with the given id does not exist
 * `401` Authorization token is missing or is not valid
 * `401` Client headers are missing or not valid
