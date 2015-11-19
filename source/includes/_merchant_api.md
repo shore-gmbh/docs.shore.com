@@ -4,6 +4,122 @@ Shore provides an API specifically for the merchants so that
 they can manage their accounts, branches, appointments,
 customers, etc..
 
+## POST /api/merchant/me/authenticate
+
+> Example Request
+
+```language-curl
+$ curl https://api.shore.com/api/merchant/me/authenticate \
+  -X POST \
+  -u Mzs6i13SUB16xfyGFAm4: \
+  -d datetime='2014-07-16T19:20+01:00'
+  -d duration='60'
+  -d inform_customer='true'
+  -d reason='Because I said so.'
+  -H 'Accept: application/vnd.termine24.de; version=3'
+  -H 'client_id: de.termine24.dienstleister.ios.1'
+  -H 'client_secret: secret'
+  -H 'client_bundle_identifier: de.termine24.dienstleister'
+  -H 'client_version: 1.0.0'
+```
+
+> Example Response
+
+```language-javascript
+{
+  "email": "mail@example.com",
+  "urban_airship_alias":"abc..123",                 # UrbanAirship alias for this merchant's devices or null
+                                                    #  if this merchant doesn't have any devices registered
+                                                    #  yet.
+  "authentication_token": "BG1QJ1Jyzfwnjc2tLm1x",
+  "service_providers": [  # Mandatory: All MerchantProfiles belonging to this account (including the current)
+    {
+      "id": "achsel_alex_gmbh",     # Mandatory: The slug unique to this MerchantProfile (since V3)
+      "name": "Achsel Alex GmbH",
+      "profile_url": "https://profile.shore.com/muenchen/achsel-alex-gmbh",
+      "booking_url": "https://connect.shore.com/achsel-alex-gmbh/widget",
+      "fss_url": "https://fss.shore.com/39847bc0-5f20-417b-bd44-e966343797f1/documents",
+      "config": {   # since V3.1 - various configuration settings for this merchant
+        "required_capacity": true,        # If true, then the merchant wants to see the person count when creating new appointments.
+                                          #   If false, then the merchant explicitly does not want person count. If null, then no
+                                          #   configuration has been made.
+        "required_capacity_options": [    # The options the merchant configured for appointments' person count. Is never null.
+          {"name":"1 Person", "value":1}, # 'name' is the localized key to display. 'value' is the integer or string value to pass
+          ...                             #   to the create appointment endpoint.
+          {"name":"Mehr als 10 Personen", "value":"Mehr als 10 Personen"}
+        ],
+       },
+      "logo_url": "/media/.../logo.jpg", # Optional: The logo, first image or nil (since V3)
+      "logo_size": "100x100",            # Mandatory: The requested size (WIDTHxHEIGHT) of the logo
+                                         #   even if the logo_url is nil. Default is 100x100 (since V3)
+      "time_zone": "Europe/Berlin"  # Mandatory: The time zone of the
+        # merchant in form of a TZ Database (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+        # time zone.
+    }
+  ]
+}
+```
+
+Authenticate the merchant profile's credentials (a.k.a. sign in, login).
+
+### Request URL
+`https://api.shore.com/api/merchant/me/authenticate`
+
+### Request Params
+<table class="attributes">
+  <tr>
+    <td>email<div>String, <span class="req">Required</span></div></td>
+    <td>Valid email address of an existing MerchantProfile</td>
+  </tr>
+  <tr>
+    <td>password<div>String, <span class="req">Required</span></div></td>
+    <td>Plain-text password of the MerchantProfile with the given email address</td>
+  </tr>
+  <tr>
+    <td>device_token<div>String, <span class="opt">Optional</span></div></td>
+    <td>Provider specific device ID where this device can receive push notifications (since V3.2)</td>
+  </tr>
+  <tr>
+    <td>device_token_provider<div>String, <span class="opt">Optional</span></div></td>
+    <td>Provider for the given device_token (e.g. 'android' or blank for iOS) (since V3.2)</td>
+  </tr>
+  <tr>
+    <td>logo_size<div>String, <span class="opt">Optional</span></div></td>
+    <td>The String size of the returned merchant profile logo. Default is "100x100" (since V3)</td>
+  </tr>
+</table>
+
+### Request Headers
+<table class="attributes">
+  <tr>
+    <td>Accept<div>String, <span class="req">Required</span></div></td>
+    <td>The api version to call.</td>
+  </tr>
+  <tr>
+    <td>client_id<div>String, <span class="req">Required</span></div></td>
+    <td>The client identifier</td>
+  </tr>
+  <tr>
+    <td>client_secret<div>String, <span class="req">Required</span></div></td>
+    <td>The client secret (see ENV['API_CLIENT_SECRET'])</td>
+  </tr>
+  <tr>
+    <td>client_bundle_identifier<div>String, <span class="req">Required</span></div></td>
+    <td>The unique identifier for the client (e.g. iOS bundle identifier)</td>
+  </tr>
+  <tr>
+    <td>client_version<div>String, <span class="req">Required</span></div></td>
+    <td>The version of the client.</td>
+  </tr>
+</table>
+
+### Response Code
+* `200` Success
+* `400` device_token_provider is not a valid provider
+* `401` email doesn't exist or password is incorrect
+* `401` Client headers are missing or not valid
+
+
 ## POST /api/merchant/appointments/:id/move
 
 > Example Request
