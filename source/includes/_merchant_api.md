@@ -1600,3 +1600,653 @@ Update an appointment with the given parameters.
 * `404` Appointment with the given id does not exist
 * `401` Authorization token is missing or is not valid
 * `401` Client headers are missing or not valid
+
+## POST /api/merchant/customers/
+
+> Example Request
+
+```language-curl
+$ curl https://api.shore.com/api/merchant/customers \
+  -H 'Accept: application/vnd.termine24.de; version=3'
+  -H 'client_id: de.termine24.dienstleister.ios.1'
+  -H 'client_secret: secret'
+  -H 'client_bundle_identifier: de.termine24.dienstleister'
+  -H 'client_version: 1.0.0'
+  -H 'Authorization: Token token=jFjNCbGUs3q7wzxc7cPb'
+  -H 'service_provider_id: the-merchant-id'
+```
+
+> Example Response
+
+```language-javascript
+{
+  "appointment": {
+    "id":1234,
+    "phase": 1,                             # 0 = open, 1 = will take place, 2 = will not take place or already did take place
+    "accepted_state": 10,                   # 10 (pending), 11 (accepted), 12 (cancelled)
+    "action_required_by": 0,                # 0 = no action required, 1 = merchant action required, 2 = customer action required
+    "human_state": "Termin findet statt"    # Localized description of the appointment's
+                                            # current state from the merchant's perspective
+    "datetime":"2014-07-16T19:20:00+02:00",
+    "datetime_end":"2014-07-16T19:50:00+02:00",
+    "duration": 30,
+    "pre_duration": 0,
+    "post_duration": 15,
+    "service_name": "Reservierung, Anderes"   # Names of the services booked or null if none booked
+    "human_price": "638,95 €",                # Price as formatted string or null if free
+    "color": null,                            # Color assigned to the Appointment. "/#[0-9a-f]{6}/i" or "null".
+    "attachments": ["123"],                   # JSON array of attachment ids from FSS.
+    "attachments_info": [                         # Array of attachments with meta information about each attachment
+      {
+        "id": "123"                               # id of attachment
+        "filename": "image.jpg",                  # filename
+        "url": "http://fss.shore.com/image.jpg",  # url to the uploaded file (you will be redirected to amazon afterwards)
+        "attachment_label": "Attachments",        # label to show for attachment
+        "deletable": false                        # is it allowed to delete this attachment
+      },
+      ...
+    ],
+    "human_additional_information": {         # Mandatory. Can be {}. Keys are not predefined.
+                                              # This is just an example of possible keys.
+      "required_capacity": {                  # Each key always has a non-localized key
+        "human_key": "Personenzahl",          # Each key always has the localized key
+        "value": "5 Personen"               # Each key always has the string value
+      },
+      "subject": {                            # This is a commonly defined key. It
+        "human_key": "Betreff",               # is optionally set when the merchant
+        "value=>"the subject"                 # creates an appointment
+      }
+      "reason_for_booking": {                 # This is a commonly defined key. It
+        "human_key": "Termindetails",         # is optionally set when the customer
+        "value": "I want to celebrate party." # creates an appointment
+      },
+      ... Different keys or additional keys may be present ...
+    },
+    "customer": {
+      "id":1234,                  # MerchantCustomer#id
+      "uuid":1234,                # MerchantCustomer#uuid
+      "title":"Herr",             # localized title (e.g. Herr/Frau) or null if title not known
+      "first_name":"Max",         # first name or null if not known
+      "last_name":"Mustermann",   # last name
+      "email":"max@mail.de",      # contact email or null if not known
+      "mobile":"017623648372",    # contact mobile phone number or null if they have none
+      "deleted":false             # true if the customer has been deleted, otherwise false
+    }
+    "services": [                                 # Optional. Can be empty though. Exists since V3.2.
+      {
+        "id":"the-service-id",      # Service#id
+        "name":"Bikini Waxing",     # Service#name
+      }
+    ],
+    "resources": [                                # Optional. Can be empty though. Exists since V3.1.
+      {
+        "id":1234,        # Resource#id
+        "name":"Table 2", # Resource#name
+      }
+    ],
+    "steps": [                                    # Optional. Can be empty though or can also be null when
+                                                  # appointment was created without steps. Exists since V3.2.
+      {
+        "type": 'work',                   # There are 4 types of steps:
+                                          #   1) 'pre_processing'. Must comes first. Preparation step to start 'work'.
+                                          #   2) [default] 'work'. If no types specified than 'work' used as default.
+                                          #                        Marks the start and end of the appointment for the customer.
+                                          #   3) 'break'. Doesn't change the availability of the resource.
+                                          #   4) 'post_processing' Must comes last. Step after 'work' finished.
+        "duration": 30,                   # ServiceStep#duration in minutes. Default value is 30 minutes.
+        "name": 'Step Name',              # ServiceStep#name. Default value is empty string.
+        "resource_ids": ['1234', '5678']  # Default value is empty array.
+                                          # '1234' and '5678' are Resource#id. step#resource_ids are no such as ids in appointment#resources
+
+      }
+    ]
+  }
+}
+```
+
+Create a new customer with the given parameters.
+
+### Request URL
+`https://api.shore.com/api/merchant/customers`
+
+### Request parameters
+<table class="attributes">
+  <tr>
+	<td>last_name: "Mueller"<div>String, <span class="req"># Mandatory if first_name blank: last name</span></div></td>
+	<td><div>String, <span class="opt">first_name: "Thomas"  # Optional: first name.</span></div></td>
+	<td><div>String, <span class="opt">gender: "male"        # Optional: "male" or "female"</span></div></td>
+	<td><div>String, <span class="opt">email: "t.m@mail.com" # Optional: email address</span></div></td>
+	<td><div>String, <span class="opt">mobile: "01762378232" # Optional: mobile phone number</span></div></td>
+  </tr>
+</table>
+
+### Request Headers
+<table class="attributes">
+  <tr>
+    <td>Accept<div>String, <span class="req">Required</span></div></td>
+    <td>The api version to call.</td>
+  </tr>
+  <tr>
+    <td>client_id<div>String, <span class="req">Required</span></div></td>
+    <td>The client identifier</td>
+  </tr>
+  <tr>
+    <td>client_secret<div>String, <span class="req">Required</span></div></td>
+    <td>The client secret (see ENV['API_CLIENT_SECRET'])</td>
+  </tr>
+  <tr>
+    <td>client_bundle_identifier<div>String, <span class="req">Required</span></div></td>
+    <td>The unique identifier for the client (e.g. iOS bundle identifier)</td>
+  </tr>
+  <tr>
+    <td>client_version<div>String, <span class="req">Required</span></div></td>
+    <td>The version of the client.</td>
+  </tr>
+  <tr>
+    <td>Authorization<div>String, <span class="req">Required</span></div></td>
+    <td>The MerchantAccount#authentication_token of the current merchant account.</td>
+  </tr>
+  <tr>
+    <td>service_provider_id<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>The id or slug of the MerchantProfile
+        to use for this request as the current profile.
+        Default is the first profile created.</td>
+  </tr>
+</table>
+
+### Response Code
+* `200` Success
+* `400` Request parameters are missing or do not make a valid MerchantCustomer
+* `401` Authorization token is missing or is not valid
+* `401` Client headers are missing or not valid
+
+## GET /api/merchant/customers
+
+> Example Request
+
+```language-curl
+$ curl https://api.shore.com/api/merchant/customers \
+  -H 'Accept: application/vnd.termine24.de; version=3'
+  -H 'client_id: de.termine24.dienstleister.ios.1'
+  -H 'client_secret: secret'
+  -H 'client_bundle_identifier: de.termine24.dienstleister'
+  -H 'client_version: 1.0.0'
+  -H 'Authorization: Token token=jFjNCbGUs3q7wzxc7cPb'
+  -H 'service_provider_id: the-merchant-id'
+```
+
+> Example Response
+
+```language-javascript
+{
+  "appointment": {
+    "id":1234,
+    "phase": 1,                             # 0 = open, 1 = will take place, 2 = will not take place or already did take place
+    "accepted_state": 10,                   # 10 (pending), 11 (accepted), 12 (cancelled)
+    "action_required_by": 0,                # 0 = no action required, 1 = merchant action required, 2 = customer action required
+    "human_state": "Termin findet statt"    # Localized description of the appointment's
+                                            # current state from the merchant's perspective
+    "datetime":"2014-07-16T19:20:00+02:00",
+    "datetime_end":"2014-07-16T19:50:00+02:00",
+    "duration": 30,
+    "pre_duration": 0,
+    "post_duration": 15,
+    "service_name": "Reservierung, Anderes"   # Names of the services booked or null if none booked
+    "human_price": "638,95 €",                # Price as formatted string or null if free
+    "color": null,                            # Color assigned to the Appointment. "/#[0-9a-f]{6}/i" or "null".
+    "attachments": ["123"],                   # JSON array of attachment ids from FSS.
+    "attachments_info": [                         # Array of attachments with meta information about each attachment
+      {
+        "id": "123"                               # id of attachment
+        "filename": "image.jpg",                  # filename
+        "url": "http://fss.shore.com/image.jpg",  # url to the uploaded file (you will be redirected to amazon afterwards)
+        "attachment_label": "Attachments",        # label to show for attachment
+        "deletable": false                        # is it allowed to delete this attachment
+      },
+      ...
+    ],
+    "human_additional_information": {         # Mandatory. Can be {}. Keys are not predefined.
+                                              # This is just an example of possible keys.
+      "required_capacity": {                  # Each key always has a non-localized key
+        "human_key": "Personenzahl",          # Each key always has the localized key
+        "value": "5 Personen"               # Each key always has the string value
+      },
+      "subject": {                            # This is a commonly defined key. It
+        "human_key": "Betreff",               # is optionally set when the merchant
+        "value=>"the subject"                 # creates an appointment
+      }
+      "reason_for_booking": {                 # This is a commonly defined key. It
+        "human_key": "Termindetails",         # is optionally set when the customer
+        "value": "I want to celebrate party." # creates an appointment
+      },
+      ... Different keys or additional keys may be present ...
+    },
+    "customer": {
+      "id":1234,                  # MerchantCustomer#id
+      "uuid":1234,                # MerchantCustomer#uuid
+      "title":"Herr",             # localized title (e.g. Herr/Frau) or null if title not known
+      "first_name":"Max",         # first name or null if not known
+      "last_name":"Mustermann",   # last name
+      "email":"max@mail.de",      # contact email or null if not known
+      "mobile":"017623648372",    # contact mobile phone number or null if they have none
+      "deleted":false             # true if the customer has been deleted, otherwise false
+    }
+    "services": [                                 # Optional. Can be empty though. Exists since V3.2.
+      {
+        "id":"the-service-id",      # Service#id
+        "name":"Bikini Waxing",     # Service#name
+      }
+    ],
+    "resources": [                                # Optional. Can be empty though. Exists since V3.1.
+      {
+        "id":1234,        # Resource#id
+        "name":"Table 2", # Resource#name
+      }
+    ],
+    "steps": [                                    # Optional. Can be empty though or can also be null when
+                                                  # appointment was created without steps. Exists since V3.2.
+      {
+        "type": 'work',                   # There are 4 types of steps:
+                                          #   1) 'pre_processing'. Must comes first. Preparation step to start 'work'.
+                                          #   2) [default] 'work'. If no types specified than 'work' used as default.
+                                          #                        Marks the start and end of the appointment for the customer.
+                                          #   3) 'break'. Doesn't change the availability of the resource.
+                                          #   4) 'post_processing' Must comes last. Step after 'work' finished.
+        "duration": 30,                   # ServiceStep#duration in minutes. Default value is 30 minutes.
+        "name": 'Step Name',              # ServiceStep#name. Default value is empty string.
+        "resource_ids": ['1234', '5678']  # Default value is empty array.
+                                          # '1234' and '5678' are Resource#id. step#resource_ids are no such as ids in appointment#resources
+
+      }
+    ]
+  }
+}
+```
+
+List this merchant's MerchantCustomers sorted alphabetically by first name then last name.
+
+### Request URL
+`https://api.shore.com/api/merchant/customers`
+
+### Request parameters
+<table class="attributes">
+  <tr>
+	<td><div>String, <span class="opt">updated_since: "2013-07-16T19:20+00:00"  # Optional. Only return customers updated after</span></div></td>
+    <td>#  this datetime in ISO8601 format</td>
+    <td>#  (see http://www.w3.org/TR/NOTE-datetime). Default</td>
+    <td>#  is "" so all customers are returned. Pass the</td>
+    <td>#  meta/pagination/last_page_requested_at value here</td>
+    <td>#  when it exists from the last call to only get</td>
+    <td>#  the customers that have been updated since the</td>
+    <td>#  last time the client retrieved the entire customer list.</td>
+	<td><div>String, <span class="opt">page: "1"           # Optional. The current page of the results. Default is "1"</span></div></td>
+	<td><div>String, <span class="opt">per_page: "10"      # Optional. The number of results per page. Default is "10". Set</span></div></td>
+    <td>#  to "0" for unlimited results per page.</td>
+	<td><div>String, <span class="opt">with_deleted: "false" # Optional. If "true" AND "updated_since" is not blank, then deleted</span></div></td>
+    <td>#  MerchantCustomers are also returned by this call. This is useful</td>
+    <td>#  if the client is maintaining a cache of the customers. This makes</td>
+    <td>#  it possible for the client to keep their cache in sync with the</td>
+    <td>#  server. New clients should always set this to true and handle</td>
+    <td>#  the new "deleted" flag on the CustomerSerializer. Since this</td>
+    <td>#  parameter only makes sense for updating a client cache, it only</td>
+    <td>#  only works when updated_since is not blank. Default is "false" and</td>
+    <td>#  value forced to "false" if "updated_since" is blank.</td>
+  </tr>
+</table>
+
+### Request Headers
+<table class="attributes">
+  <tr>
+    <td>Accept<div>String, <span class="req">Required</span></div></td>
+    <td>The api version to call.</td>
+  </tr>
+  <tr>
+    <td>client_id<div>String, <span class="req">Required</span></div></td>
+    <td>The client identifier</td>
+  </tr>
+  <tr>
+    <td>client_secret<div>String, <span class="req">Required</span></div></td>
+    <td>The client secret (see ENV['API_CLIENT_SECRET'])</td>
+  </tr>
+  <tr>
+    <td>client_bundle_identifier<div>String, <span class="req">Required</span></div></td>
+    <td>The unique identifier for the client (e.g. iOS bundle identifier)</td>
+  </tr>
+  <tr>
+    <td>client_version<div>String, <span class="req">Required</span></div></td>
+    <td>The version of the client.</td>
+  </tr>
+  <tr>
+    <td>Authorization<div>String, <span class="req">Required</span></div></td>
+    <td>The MerchantAccount#authentication_token of the current merchant account.</td>
+  </tr>
+  <tr>
+    <td>service_provider_id<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>The id or slug of the MerchantProfile
+        to use for this request as the current profile.
+        Default is the first profile created.</td>
+  </tr>
+</table>
+
+### Response Code
+* `200` Success
+* `400` Given parameters are not valid (e.g. update_since not a valid ISO8601 datetime)
+* `401` Authorization token is missing or is not valid
+* `401` Client headers are missing or not valid
+
+## GET /api/merchant/customers/:id
+
+> Example Request
+
+```language-curl
+$ curl https://api.shore.com/api/merchant/customers/:id \
+  -H 'Accept: application/vnd.termine24.de; version=3'
+  -H 'client_id: de.termine24.dienstleister.ios.1'
+  -H 'client_secret: secret'
+  -H 'client_bundle_identifier: de.termine24.dienstleister'
+  -H 'client_version: 1.0.0'
+  -H 'Authorization: Token token=jFjNCbGUs3q7wzxc7cPb'
+  -H 'service_provider_id: the-merchant-id'
+```
+
+> Example Response
+
+```language-javascript
+{
+  "appointment": {
+    "id":1234,
+    "phase": 1,                             # 0 = open, 1 = will take place, 2 = will not take place or already did take place
+    "accepted_state": 10,                   # 10 (pending), 11 (accepted), 12 (cancelled)
+    "action_required_by": 0,                # 0 = no action required, 1 = merchant action required, 2 = customer action required
+    "human_state": "Termin findet statt"    # Localized description of the appointment's
+                                            # current state from the merchant's perspective
+    "datetime":"2014-07-16T19:20:00+02:00",
+    "datetime_end":"2014-07-16T19:50:00+02:00",
+    "duration": 30,
+    "pre_duration": 0,
+    "post_duration": 15,
+    "service_name": "Reservierung, Anderes"   # Names of the services booked or null if none booked
+    "human_price": "638,95 €",                # Price as formatted string or null if free
+    "color": null,                            # Color assigned to the Appointment. "/#[0-9a-f]{6}/i" or "null".
+    "attachments": ["123"],                   # JSON array of attachment ids from FSS.
+    "attachments_info": [                         # Array of attachments with meta information about each attachment
+      {
+        "id": "123"                               # id of attachment
+        "filename": "image.jpg",                  # filename
+        "url": "http://fss.shore.com/image.jpg",  # url to the uploaded file (you will be redirected to amazon afterwards)
+        "attachment_label": "Attachments",        # label to show for attachment
+        "deletable": false                        # is it allowed to delete this attachment
+      },
+      ...
+    ],
+    "human_additional_information": {         # Mandatory. Can be {}. Keys are not predefined.
+                                              # This is just an example of possible keys.
+      "required_capacity": {                  # Each key always has a non-localized key
+        "human_key": "Personenzahl",          # Each key always has the localized key
+        "value": "5 Personen"               # Each key always has the string value
+      },
+      "subject": {                            # This is a commonly defined key. It
+        "human_key": "Betreff",               # is optionally set when the merchant
+        "value=>"the subject"                 # creates an appointment
+      }
+      "reason_for_booking": {                 # This is a commonly defined key. It
+        "human_key": "Termindetails",         # is optionally set when the customer
+        "value": "I want to celebrate party." # creates an appointment
+      },
+      ... Different keys or additional keys may be present ...
+    },
+    "customer": {
+      "id":1234,                  # MerchantCustomer#id
+      "uuid":1234,                # MerchantCustomer#uuid
+      "title":"Herr",             # localized title (e.g. Herr/Frau) or null if title not known
+      "first_name":"Max",         # first name or null if not known
+      "last_name":"Mustermann",   # last name
+      "email":"max@mail.de",      # contact email or null if not known
+      "mobile":"017623648372",    # contact mobile phone number or null if they have none
+      "deleted":false             # true if the customer has been deleted, otherwise false
+    }
+    "services": [                                 # Optional. Can be empty though. Exists since V3.2.
+      {
+        "id":"the-service-id",      # Service#id
+        "name":"Bikini Waxing",     # Service#name
+      }
+    ],
+    "resources": [                                # Optional. Can be empty though. Exists since V3.1.
+      {
+        "id":1234,        # Resource#id
+        "name":"Table 2", # Resource#name
+      }
+    ],
+    "steps": [                                    # Optional. Can be empty though or can also be null when
+                                                  # appointment was created without steps. Exists since V3.2.
+      {
+        "type": 'work',                   # There are 4 types of steps:
+                                          #   1) 'pre_processing'. Must comes first. Preparation step to start 'work'.
+                                          #   2) [default] 'work'. If no types specified than 'work' used as default.
+                                          #                        Marks the start and end of the appointment for the customer.
+                                          #   3) 'break'. Doesn't change the availability of the resource.
+                                          #   4) 'post_processing' Must comes last. Step after 'work' finished.
+        "duration": 30,                   # ServiceStep#duration in minutes. Default value is 30 minutes.
+        "name": 'Step Name',              # ServiceStep#name. Default value is empty string.
+        "resource_ids": ['1234', '5678']  # Default value is empty array.
+                                          # '1234' and '5678' are Resource#id. step#resource_ids are no such as ids in appointment#resources
+
+      }
+    ]
+  }
+}
+```
+
+Show the merchant's MerchantCustomer with the given MerchantCustomer#id.
+
+### Request URL
+`https://api.shore.com/api/merchant/customers/:id`
+
+### Request parameters
+<table class="attributes">
+  <tr>
+	<td>id=1234<div>String, <span class="req"># Mandatory. MerchantCustomer#id. Customer must belong to the current merchant!</span></div></td>
+	<td><div>String, <span class="opt">with_deleted: "false" # Optional. If "true", then a deleted MerchantCustomer is also</span></div></td>
+    <td>#  returned by this call. Default is "false".</td>
+  </tr>
+</table>
+
+### Request Headers
+<table class="attributes">
+  <tr>
+    <td>Accept<div>String, <span class="req">Required</span></div></td>
+    <td>The api version to call.</td>
+  </tr>
+  <tr>
+    <td>client_id<div>String, <span class="req">Required</span></div></td>
+    <td>The client identifier</td>
+  </tr>
+  <tr>
+    <td>client_secret<div>String, <span class="req">Required</span></div></td>
+    <td>The client secret (see ENV['API_CLIENT_SECRET'])</td>
+  </tr>
+  <tr>
+    <td>client_bundle_identifier<div>String, <span class="req">Required</span></div></td>
+    <td>The unique identifier for the client (e.g. iOS bundle identifier)</td>
+  </tr>
+  <tr>
+    <td>client_version<div>String, <span class="req">Required</span></div></td>
+    <td>The version of the client.</td>
+  </tr>
+  <tr>
+    <td>Authorization<div>String, <span class="req">Required</span></div></td>
+    <td>The MerchantAccount#authentication_token of the current merchant account.</td>
+  </tr>
+  <tr>
+    <td>service_provider_id<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>The id or slug of the MerchantProfile
+        to use for this request as the current profile.
+        Default is the first profile created.</td>
+  </tr>
+</table>
+
+### Response Code
+* `200` Success
+* `401` Authorization token is missing or is not valid
+* `401` Client headers are missing or not valid
+* `404` MerchantCustomer with the given ID not found
+
+## PUT /api/merchant/customers/:id
+
+> Example Request
+
+```language-curl
+$ curl https://api.shore.com/api/merchant/customers/:id \
+  -H 'Accept: application/vnd.termine24.de; version=3'
+  -H 'client_id: de.termine24.dienstleister.ios.1'
+  -H 'client_secret: secret'
+  -H 'client_bundle_identifier: de.termine24.dienstleister'
+  -H 'client_version: 1.0.0'
+  -H 'Authorization: Token token=jFjNCbGUs3q7wzxc7cPb'
+  -H 'service_provider_id: the-merchant-id'
+```
+
+> Example Response
+
+```language-javascript
+{
+  "appointment": {
+    "id":1234,
+    "phase": 1,                             # 0 = open, 1 = will take place, 2 = will not take place or already did take place
+    "accepted_state": 10,                   # 10 (pending), 11 (accepted), 12 (cancelled)
+    "action_required_by": 0,                # 0 = no action required, 1 = merchant action required, 2 = customer action required
+    "human_state": "Termin findet statt"    # Localized description of the appointment's
+                                            # current state from the merchant's perspective
+    "datetime":"2014-07-16T19:20:00+02:00",
+    "datetime_end":"2014-07-16T19:50:00+02:00",
+    "duration": 30,
+    "pre_duration": 0,
+    "post_duration": 15,
+    "service_name": "Reservierung, Anderes"   # Names of the services booked or null if none booked
+    "human_price": "638,95 €",                # Price as formatted string or null if free
+    "color": null,                            # Color assigned to the Appointment. "/#[0-9a-f]{6}/i" or "null".
+    "attachments": ["123"],                   # JSON array of attachment ids from FSS.
+    "attachments_info": [                         # Array of attachments with meta information about each attachment
+      {
+        "id": "123"                               # id of attachment
+        "filename": "image.jpg",                  # filename
+        "url": "http://fss.shore.com/image.jpg",  # url to the uploaded file (you will be redirected to amazon afterwards)
+        "attachment_label": "Attachments",        # label to show for attachment
+        "deletable": false                        # is it allowed to delete this attachment
+      },
+      ...
+    ],
+    "human_additional_information": {         # Mandatory. Can be {}. Keys are not predefined.
+                                              # This is just an example of possible keys.
+      "required_capacity": {                  # Each key always has a non-localized key
+        "human_key": "Personenzahl",          # Each key always has the localized key
+        "value": "5 Personen"               # Each key always has the string value
+      },
+      "subject": {                            # This is a commonly defined key. It
+        "human_key": "Betreff",               # is optionally set when the merchant
+        "value=>"the subject"                 # creates an appointment
+      }
+      "reason_for_booking": {                 # This is a commonly defined key. It
+        "human_key": "Termindetails",         # is optionally set when the customer
+        "value": "I want to celebrate party." # creates an appointment
+      },
+      ... Different keys or additional keys may be present ...
+    },
+    "customer": {
+      "id":1234,                  # MerchantCustomer#id
+      "uuid":1234,                # MerchantCustomer#uuid
+      "title":"Herr",             # localized title (e.g. Herr/Frau) or null if title not known
+      "first_name":"Max",         # first name or null if not known
+      "last_name":"Mustermann",   # last name
+      "email":"max@mail.de",      # contact email or null if not known
+      "mobile":"017623648372",    # contact mobile phone number or null if they have none
+      "deleted":false             # true if the customer has been deleted, otherwise false
+    }
+    "services": [                                 # Optional. Can be empty though. Exists since V3.2.
+      {
+        "id":"the-service-id",      # Service#id
+        "name":"Bikini Waxing",     # Service#name
+      }
+    ],
+    "resources": [                                # Optional. Can be empty though. Exists since V3.1.
+      {
+        "id":1234,        # Resource#id
+        "name":"Table 2", # Resource#name
+      }
+    ],
+    "steps": [                                    # Optional. Can be empty though or can also be null when
+                                                  # appointment was created without steps. Exists since V3.2.
+      {
+        "type": 'work',                   # There are 4 types of steps:
+                                          #   1) 'pre_processing'. Must comes first. Preparation step to start 'work'.
+                                          #   2) [default] 'work'. If no types specified than 'work' used as default.
+                                          #                        Marks the start and end of the appointment for the customer.
+                                          #   3) 'break'. Doesn't change the availability of the resource.
+                                          #   4) 'post_processing' Must comes last. Step after 'work' finished.
+        "duration": 30,                   # ServiceStep#duration in minutes. Default value is 30 minutes.
+        "name": 'Step Name',              # ServiceStep#name. Default value is empty string.
+        "resource_ids": ['1234', '5678']  # Default value is empty array.
+                                          # '1234' and '5678' are Resource#id. step#resource_ids are no such as ids in appointment#resources
+
+      }
+    ]
+  }
+}
+```
+
+Updates an existing customer with the given parameters.
+
+### Request URL
+`https://api.shore.com/api/merchant/customers/:id`
+
+### Request parameters
+<table class="attributes">
+  <tr>
+	<td>id=1234<div>String, <span class="req"># Mandatory. MerchantCustomer#id. Customer must belong to the current merchant!</span></div></td>
+	<td><div>String, <span class="opt">last_name: "Mueller"  # Optional: last name</span></div></td>
+	<td><div>String, <span class="opt">first_name: "Thomas"  # Optional: first name</span></div></td>
+	<td><div>String, <span class="opt">gender: "male"        # Optional: "male" or "female"</span></div></td>
+	<td><div>String, <span class="opt">email: "t.m@mail.com" # Optional: email address</span></div></td>
+	<td><div>String, <span class="opt">mobile: "01762378232" # Optional: mobile phone number</span></div></td>
+  </tr>
+</table>
+
+### Request Headers
+<table class="attributes">
+  <tr>
+    <td>Accept<div>String, <span class="req">Required</span></div></td>
+    <td>The api version to call.</td>
+  </tr>
+  <tr>
+    <td>client_id<div>String, <span class="req">Required</span></div></td>
+    <td>The client identifier</td>
+  </tr>
+  <tr>
+    <td>client_secret<div>String, <span class="req">Required</span></div></td>
+    <td>The client secret (see ENV['API_CLIENT_SECRET'])</td>
+  </tr>
+  <tr>
+    <td>client_bundle_identifier<div>String, <span class="req">Required</span></div></td>
+    <td>The unique identifier for the client (e.g. iOS bundle identifier)</td>
+  </tr>
+  <tr>
+    <td>client_version<div>String, <span class="req">Required</span></div></td>
+    <td>The version of the client.</td>
+  </tr>
+  <tr>
+    <td>Authorization<div>String, <span class="req">Required</span></div></td>
+    <td>The MerchantAccount#authentication_token of the current merchant account.</td>
+  </tr>
+  <tr>
+    <td>service_provider_id<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>The id or slug of the MerchantProfile
+        to use for this request as the current profile.
+        Default is the first profile created.</td>
+  </tr>
+</table>
+
+### Response Code
+* `200` Success
+* `400` Request parameters are missing or do not make a valid MerchantCustomer
+* `401` Authorization token is missing or is not valid
+* `401` Client headers are missing or not valid
