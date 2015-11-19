@@ -120,6 +120,180 @@ Authenticate the merchant profile's credentials (a.k.a. sign in, login).
 * `401` Client headers are missing or not valid
 
 
+## GET /api/merchant/resources
+
+> Example Request
+
+```language-curl
+$ curl https://api.shore.com/api/merchant/resources \
+  -u Mzs6i13SUB16xfyGFAm4: \
+  -H 'Accept: application/vnd.termine24.de; version=3'
+  -H 'client_id: de.termine24.dienstleister.ios.1'
+  -H 'client_secret: secret'
+  -H 'client_bundle_identifier: de.termine24.dienstleister'
+  -H 'client_version: 1.0.0'
+  -H 'Authorization: Token token=jFjNCbGUs3q7wzxc7cPb'
+  -H 'service_provider_id: the-merchant-id'
+```
+
+> Example Response
+
+```language-javascript
+{
+  "resources": [
+    {
+      "id":1234,        # Resource#id
+      "name":"Table 2", # Resource#name
+    }
+  ]
+}
+```
+
+List this merchant's resources sorted in the order the order they should be displayed. If any of the appointment parameters (i.e. datetime, duration, service_id or required_capacity) are set, then the response will also contain whether or not each service could be requested for an appointment with the given parameters.
+
+### Request URL
+`https://api.shore.com/api/merchant/appointments/:id/move`
+
+### Request Params
+<table class="attributes">
+</table>
+
+### Request Headers
+<table class="attributes">
+  <tr>
+    <td>Accept<div>String, <span class="req">Required</span></div></td>
+    <td>The api version to call.</td>
+  </tr>
+  <tr>
+    <td>client_id<div>String, <span class="req">Required</span></div></td>
+    <td>The client identifier</td>
+  </tr>
+  <tr>
+    <td>client_secret<div>String, <span class="req">Required</span></div></td>
+    <td>The client secret (see ENV['API_CLIENT_SECRET'])</td>
+  </tr>
+  <tr>
+    <td>client_bundle_identifier<div>String, <span class="req">Required</span></div></td>
+    <td>The unique identifier for the client (e.g. iOS bundle identifier)</td>
+  </tr>
+  <tr>
+    <td>client_version<div>String, <span class="req">Required</span></div></td>
+    <td>The version of the client.</td>
+  </tr>
+  <tr>
+    <td>Authorization<div>String, <span class="req">Required</span></div></td>
+    <td>The MerchantAccount#authentication_token of the current merchant account.</td>
+  </tr>
+  <tr>
+    <td>service_provider_id<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>The id or slug of the MerchantProfile
+        to use for this request as the current profile.
+        Default is the first profile created.</td>
+  </tr>
+</table>
+
+### Response Code
+* `200` Success
+* `401` Authorization token is missing or is not valid
+* `401` Client headers are missing or not valid
+
+
+## GET /api/merchant/services
+
+> Example Request
+
+```language-curl
+$ curl https://api.shore.com/api/merchant/services \
+  -u Mzs6i13SUB16xfyGFAm4: \
+  -H 'Accept: application/vnd.termine24.de; version=3'
+  -H 'client_id: de.termine24.dienstleister.ios.1'
+  -H 'client_secret: secret'
+  -H 'client_bundle_identifier: de.termine24.dienstleister'
+  -H 'client_version: 1.0.0'
+  -H 'Authorization: Token token=jFjNCbGUs3q7wzxc7cPb'
+  -H 'service_provider_id: the-merchant-id'
+```
+
+> Example Response
+
+```language-javascript
+{
+  "services": [
+    {
+      "id":1234,                  # Service#id
+      "name":"Bikini Waxing",     # Service#name
+      "price_cents": 63895,       # Price in cents of the local currency of the merchant
+                                  #  (e.g. Euro cents) or nil if no price for this service.
+      "price_currency": "EUR"     # ISO 4217 code of the currency of the price or nil if
+                                  #  no price for this service. See http://en.wikipedia.org/wiki/ISO_4217
+      "price": "638,95 €",        # Formatted price in the local currency of the merchant
+      "steps": [                            # Optional. Can be empty though or can also be null when
+                                            # appointment was created without steps. Exists since V3.2.
+        {
+          "type": 'work',                   # There are 4 types of steps:
+                                            #   1) 'pre_processing'. Must comes first. Preparation step to start 'work'.
+                                            #   2) [default] 'work'. If no types specified than 'work' used as default.
+                                            #                        Marks the start and end of the appointment for the customer.
+                                            #   3) 'break'. Doesn't change the availability of the resource.
+                                            #   4) 'post_processing' Must comes last. Step after 'work' finished.
+          "duration": 30,                   # ServiceStep#duration in minutes. Default value is 30 minutes.
+          "name": 'Step Name'               # ServiceStep#name. Default value is empty string.
+        }
+      ]
+    }
+  ]
+}
+```
+
+List this merchant's services sorted in the order the order they should be displayed.
+
+### Request URL
+`https://api.shore.com/api/merchant/services`
+
+### Request Params
+<table class="attributes">
+</table>
+
+### Request Headers
+<table class="attributes">
+  <tr>
+    <td>Accept<div>String, <span class="req">Required</span></div></td>
+    <td>The api version to call.</td>
+  </tr>
+  <tr>
+    <td>client_id<div>String, <span class="req">Required</span></div></td>
+    <td>The client identifier</td>
+  </tr>
+  <tr>
+    <td>client_secret<div>String, <span class="req">Required</span></div></td>
+    <td>The client secret (see ENV['API_CLIENT_SECRET'])</td>
+  </tr>
+  <tr>
+    <td>client_bundle_identifier<div>String, <span class="req">Required</span></div></td>
+    <td>The unique identifier for the client (e.g. iOS bundle identifier)</td>
+  </tr>
+  <tr>
+    <td>client_version<div>String, <span class="req">Required</span></div></td>
+    <td>The version of the client.</td>
+  </tr>
+  <tr>
+    <td>Authorization<div>String, <span class="req">Required</span></div></td>
+    <td>The MerchantAccount#authentication_token of the current merchant account.</td>
+  </tr>
+  <tr>
+    <td>service_provider_id<div>Integer, <span class="opt">Optional</span></div></td>
+    <td>The id or slug of the MerchantProfile
+        to use for this request as the current profile.
+        Default is the first profile created.</td>
+  </tr>
+</table>
+
+### Response Code
+* `200` Success
+* `401` Authorization token is missing or is not valid
+* `401` Client headers are missing or not valid
+
+
 ## POST /api/merchant/appointments/:id/move
 
 > Example Request
